@@ -28,29 +28,24 @@ void right(){
 
 	varx++;
 	matriz[vary][varx] = (int)sqrt(abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
-	printf("%d\n ", abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
-
 }
 
 void down(){
 
 	vary++;
 	matriz[vary][varx] = (int)sqrt(abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
-	printf("%d\n ", abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
 }
 
 void left(){
 
 	varx--;
 	matriz[vary][varx] = (int)sqrt(abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
-	printf("%d\n ", abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
 }
 
 void up(){
 
 	vary--;
 	matriz[vary][varx] = (int)sqrt(abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
-	printf("%d\n ", abs(pow(varx-posx,2)) + abs(pow(vary-posy,2)));
 }
 
 void espiral(){
