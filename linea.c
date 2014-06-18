@@ -3,7 +3,7 @@
 #include<math.h>
 
 int matriz[20][20];
-int apx=5,apy=5,ptox=10,ptoy=5;
+int apx=5,apy=5,ptox=9,ptoy=16;
 
 void llenar() {
 	int x,y;
@@ -22,9 +22,8 @@ void mostrar() {
 	}
 }
 
-void linea () {
-	int i;
-	float p1,p2,p3,p4;	//p1 der, p2 abajo, p3 izq, p4 arriba
+int linea () {
+	int i,m ;	// m pendiente
 	
 	// caso 0 pto se encuentra en el mismo que el AP, exit(0)
 	if ( (apx-ptox) == 0 && (apy-ptoy) == 0)	{
@@ -35,32 +34,60 @@ void linea () {
 	// caso 1-2 pendiente infinita -> x1 == x2
 	if ( (apx-ptox) == 0 )
 		if ( ptoy > apy ) {
-			ptoy--;
-			matriz[ptox][ptoy]=1;
+			while ( ptoy>apy ){
+				ptoy--;
+				matriz[ptox][ptoy]=1;
+			}
+			return 0;
 		}
 		else {
-			ptoy++;
-			matriz[ptox][ptoy]=1;
+			while ( ptoy<apy ){
+				ptoy++;
+				matriz[ptox][ptoy]=1;
+			}
+			return 0;
 		}
 	
 	//caso 3-4 pendiente 0 -> y1 == y2
 	if ( (apy-ptoy) == 0 )
 		if ( ptox > apx ) {
-			ptox--;
-			matriz[ptox][ptoy]=1;
+			while ( ptox>apx ){
+				ptox--;
+				matriz[ptox][ptoy]=1;
+			}
+			return 0;
 		}
 		else {
-			ptox++;
-			matriz[ptox][ptoy]=1;
+			while ( ptox<apx ){
+				ptox++;
+				matriz[ptox][ptoy]=1;
+			}
+			return 0;
 		}
 	//caso 5-6 pendiente >= 1+ >= 1-
-	if ( ((ptoy-apy)/(ptox-apx)) >= 1 )
-		if ( (ptoy<apy) && (ptox<apx) ) {
-
+	if ( ((ptoy-apy)/(ptox-apx)) >= 1 ){
+		m = (int) (ptoy-apy)/(ptox-apx);
+		if ( (ptoy>apy) && (ptox>apx) ) {
+			while ( ptox>=apx && ptoy>=apy ){
+				for (i=0;i<m;i++){
+					ptoy--;
+					matriz[ptox][ptoy]=1;
+				}
+				ptox--;
+			}
+			return 0;
 		}
 		else {
-
+			while ( ptox<=apx && ptoy<=apy ){
+				for (i=0;i<m;i++){
+					ptoy++;
+					matriz[ptox][ptoy]=1;
+				}
+				ptox++;
+			}
+			return 0;
 		}
+	}
 
 	//caso 7-8 pendiente <= -1+ <= -1-
 	if ( ((ptoy-apy)/(ptox-apx)) < -1 )
@@ -72,7 +99,7 @@ void linea () {
 		}
 	
 	//caso 9-10 pendiente ]0,1]
-	if ( ((ptoy-apy)/(pto
+//	if ( ((ptoy-apy)/(pto
 
 }
 
