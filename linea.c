@@ -3,7 +3,7 @@
 #include<math.h>
 
 int matriz[20][20];
-int apx=5,apy=5,ptox=8,ptoy=16;
+int apx=2,apy=18,ptox=9,ptoy=3;
 
 void llenar() {
 	int x,y;
@@ -23,8 +23,8 @@ void mostrar() {
 }
 
 int linea () {
-	int i,m ;	// m pendiente
-	float add;
+	int i, ent;	//parte entera de m,
+	float m,add=0,frac; //m pendiente, frac parte fraccionaria de m, add suma de las partes fraccionarias
 	
 	// caso 0 pto se encuentra en el mismo que el AP, exit(0)
 	if ( (apx-ptox) == 0 && (apy-ptoy) == 0)	{
@@ -65,23 +65,29 @@ int linea () {
 			}
 			return 0;
 		}
+
+	m = (float) (ptoy-apy)/(ptox-apx);
+	ent = (int) (ptoy-apy)/(ptox-apx);
+	frac = m - ent;
+	add = frac;
+//	printf("ent= %d add= %f \n",ent,add);
+
 	//caso 5-6 pendiente >= 1+ >= 1-
-	if ( ((ptoy-apy)/(ptox-apx)) >= 1 ){
-		m = (int) (ptoy-apy)/(ptox-apx);
-		add = (float) (ptoy-apy)/(ptox-apx) - m;
-		printf(" %d %f \n",m,add);
+	if ( m >= 1 ){
 		if ( (ptoy>apy) && (ptox>apx) ) {
-			while ( ptox>=apx || ptoy>=apy ){
-				for (i=0;i<m;i++){
+			while ( ptox>=apx && ptoy>=apy ){
+				for (i=0;i<ent;i++){
+					if (ptox<=apx && ptoy<=apy)
+						return 0;
 					ptoy--;
 					matriz[ptox][ptoy]=1;
-					add+=add;
-					printf(" %f \n",add);
-
-					if ( add > 1 ) {
+					add=add+frac;
+//					printf(" %f \n",add);
+					if ( add > ent && ptox>apx && ptoy>apy) {
 						ptoy--;
 						matriz[ptox][ptoy]=1;
-						add = (float) (ptoy-apy)/(ptox-apx) - m;
+						add = 0;
+					//	printf("add del if  %f\n",add);
 					}
 				}
 				ptox--;
@@ -90,9 +96,17 @@ int linea () {
 		}
 		else {
 			while ( ptox<=apx && ptoy<=apy ){
-				for (i=0;i<m;i++){
+				for (i=0;i<ent;i++){
+					if (ptox>=apx && ptoy>=apy)
+						return 0;
 					ptoy++;
 					matriz[ptox][ptoy]=1;
+					add=add+frac;
+					if ( add > ent && ptox<apx && ptoy<apy ) {
+						ptoy++;
+						matriz[ptox][ptoy]=1;
+						add=0;
+					}
 				}
 				ptox++;
 			}
@@ -101,14 +115,20 @@ int linea () {
 	}
 
 	//caso 7-8 pendiente <= -1+ <= -1-
-	if ( ((ptoy-apy)/(ptox-apx)) <= -1 ){
-		m = abs((int) (ptoy-apy)/(ptox-apx));
-		printf(" %d \n", m);
+	if ( m <= -1 ){
 		if ( (apy<ptoy) && (ptox<apx) ) {
 			while ( ptox<=apx && ptoy>=apy ){
-				for (i=0;i<m;i++){
+				for (i=0;i>ent;i--){
+					if (ptox>=apx && ptoy<=apy)
+						return 0;
 					ptoy--;
 					matriz[ptox][ptoy]=1;
+					add=add+frac;
+					if ( add < ent  && ptox<apx && ptoy>apy ) {
+						ptoy--;
+						matriz[ptox][ptoy]=1;
+						add=0;
+					}
 				}
 				ptox++;
 			}
@@ -116,19 +136,112 @@ int linea () {
 		}
 		else {
 			while ( ptox>=apx && ptoy<=apy ){
-				for (i=0;i<m;i++){
+				for (i=0;i>ent;i--){
+					if (ptox<=apx && ptoy >=apy)
+						return 0;
 					ptoy++;
 					matriz[ptox][ptoy]=1;
+					add=add+frac;
+					if ( add < ent && ptox>apx && ptoy<apy ) {
+						ptoy++;
+						matriz[ptox][ptoy]=1;
+						add=0;
+					}
 				}
 				ptox--;
 			}
 			return 0;
 		}
 	}
-		
 	
-	//caso 9-10 pendiente ]0,1]
-//	if ( ((ptoy-apy)/(pto
+	m = (float) (ptox-apx)/(ptoy-apy);
+	ent = (int) (ptox-apx)/(ptoy-apy);
+	frac = m - ent;
+	add = frac;
+		
+	//caso 9-10 pendiente ]0,1[ hacia origen, desde origen
+	if ( m > 1 ) { 
+		if ( (ptoy>apy) && (ptox>apx) ) {
+			while ( ptox>=apx && ptoy>=apy ){
+				for (i=0;i<ent;i++){
+					if (ptox<=apx && ptoy<=apy)
+						return 0;
+					ptox--;
+					matriz[ptox][ptoy]=1;
+					add=add+frac;
+					printf(" %f \n",add);
+					if ( add > ent && ptox>apx && ptoy>apy) {
+						ptox--;
+						matriz[ptox][ptoy]=1;
+						add = 0;
+						printf("add del if  %f\n",add);
+					}
+				}
+				ptoy--;
+			}
+			return 0;
+		}
+		else {
+			while ( ptox<=apx && ptoy<=apy ){
+				for (i=0;i<ent;i++){
+					if (ptox>=apx && ptoy>=apy)
+						return 0;
+					ptox++;
+					matriz[ptox][ptoy]=1;
+					add=add+frac;
+					if ( add > ent && ptox<apx && ptoy<apy ) {
+						ptox++;
+						matriz[ptox][ptoy]=1;
+						add=0;
+					}
+				}
+				ptoy++;
+			}
+			return 0;
+		}
+	}
+
+	//caso 11-12 pendiente ]-1,0[ con x aumentando , con x disminuyendo
+	if ( m <= -1 ){
+		if ( (apy<ptoy) && (ptox<apx) ) {
+			while ( ptox<=apx && ptoy>=apy ){
+				for (i=0;i>ent;i--){
+					if (ptox>=apx && ptoy<=apy)
+						return 0;
+					ptox++;
+					matriz[ptox][ptoy]=1;
+					add=add+frac;
+					if ( add < ent  && ptox<apx && ptoy>apy ) {
+						ptox++;
+						matriz[ptox][ptoy]=1;
+						add=0;
+					}
+				}
+				ptoy--;
+			}
+			return 0;
+		}
+		else {
+			while ( ptox>=apx && ptoy<=apy ){
+				for (i=0;i>ent;i--){
+					if (ptox<=apx && ptoy >=apy)
+						return 0;
+					ptox--;
+					matriz[ptox][ptoy]=1;
+					add=add+frac;
+					if ( add < ent && ptox>apx && ptoy<apy ) {
+						ptox--;
+						matriz[ptox][ptoy]=1;
+						add=0;
+					}
+				}
+				ptoy++;
+			}
+			return 0;
+		}
+	}
+
+
 
 }
 
@@ -136,8 +249,8 @@ int linea () {
 void main(){
 
 	llenar();
-	matriz[apx][apy]=1;
-	matriz[ptox][ptoy]=1;
+	matriz[apx][apy]=3;
+	matriz[ptox][ptoy]=2;
 
 	linea();
 	mostrar();
