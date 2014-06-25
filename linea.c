@@ -3,7 +3,7 @@
 #include<math.h>
 
 int matriz[20][20];
-int apx=2,apy=18,ptox=9,ptoy=3;
+int apx=15,apy=6,ptox=6,ptoy=11;
 
 void llenar() {
 	int x,y;
@@ -54,7 +54,7 @@ int linea () {
 		if ( ptox > apx ) {
 			while ( ptox>apx ){
 				ptox--;
-				matriz[ptox][ptoy]=1;
+				matriz[ptox][ptoy]=0;
 			}
 			return 0;
 		}
@@ -202,7 +202,7 @@ int linea () {
 	}
 
 	//caso 11-12 pendiente ]-1,0[ con x aumentando , con x disminuyendo
-	if ( m <= -1 ){
+	if ( m < -1 ){
 		if ( (apy<ptoy) && (ptox<apx) ) {
 			while ( ptox<=apx && ptoy>=apy ){
 				for (i=0;i>ent;i--){
