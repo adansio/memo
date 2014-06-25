@@ -27,7 +27,7 @@ function test
     mapa_NLOS = nan(dim1, dim2);    % mapa con paredes y obstrucciones no linea vista
     current = 0;
     limit = 90;    %   vuelta limite - Prx minima
-    APs = [50 60; 140 110; 230 120];   %   eventuales ptos con aps
+    APs = [50 91; 140 110; 230 60];   %   eventuales ptos con aps
     
     for i=1:220
         mapa_NLOS(90, i) = 5;
@@ -140,7 +140,7 @@ function [mtr, vy] = up(nlos, mtr, vx, vy, px, py, Pt)
     vy=vy-1;
     Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
     atenuacion = linea(nlos, px, py, vx, vy);
-    Prx = Prx-atenuacion;
+    Prx = Prx - atenuacion;
     if Prx > -58
         mtr(vy,vx) = Prx;
     end
@@ -154,7 +154,6 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
     if (apx-ptox) == 0 && (apy-ptoy) == 0
         atenuacion=0;
         return
-        
     end
         
     % caso 1-2 pendiente infinita -> x1 == x2
@@ -223,7 +222,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                         atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent && ptox>=apx && ptoy>=apy
+                    if add>=ent && ptox>=apx && ptoy>apy
                         ptoy=ptoy-1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
@@ -247,7 +246,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent && ptox<=apx && ptoy<=apy
+                    if add>=ent && ptox<=apx && ptoy<apy
                         ptoy=ptoy+1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
@@ -263,9 +262,9 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
 
     % caso 7-8 pendiente <= -1+, <= -1-
     if m <= -1
-        ent = abs(ent);
-        frac = abs(frac);
-        add = abs(add);
+        ent = floor(abs(ptoy-apy)/abs(ptox-apx));
+        frac = abs(m)-ent;
+        add = frac;
         
         if apy<ptoy && ptox<apx
             %   si el punto de analisis esta con angulo ]90,135] respecto el
@@ -280,7 +279,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                         atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent  && ptox<=apx && ptoy>=apy
+                    if add>=ent  && ptox<=apx && ptoy>apy
                         ptoy=ptoy-1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
@@ -304,7 +303,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                         atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent && ptox>=apx && ptoy<=apy
+                    if add>=ent && ptox>=apx && ptoy<apy
                         ptoy=ptoy+1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
@@ -324,7 +323,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
     add = frac;
 
     % caso 9-10 pendiente ]0,1[ ; angulo ]0,45[
-    if m > 1
+    if m >= 1
         %   si el punto de analisis esta con angulo ]0,45[ respecto el ap y
         %   el eje x
         if ptoy>apy && ptox>apx
@@ -338,7 +337,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent && ptox>=apx && ptoy>=apy
+                    if add>=ent && ptox>apx && ptoy>apy
                         ptox=ptox-1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
@@ -362,7 +361,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent && ptox<=apx && ptoy<=apy
+                    if add>=ent && ptox<apx && ptoy<apy
                         ptox=ptox+1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
@@ -377,10 +376,10 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
     end
     
     % caso 11-12 pendiente ]0,-1[ ; ]-1,0[
-    if m < -1 
-        ent = abs(ent);
-        frac = abs(frac);
-        add = abs(add);
+    if m <= -1 
+        ent = floor(abs(ptox-apx)/abs(ptoy-apy));
+        frac = abs(m)-ent;
+        add = frac;
         
         if apy<ptoy && ptox<apx
             while ptox<=apx && ptoy>=apy
@@ -393,7 +392,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent && ptox<=apx && ptoy>=apy
+                    if add>=ent && ptox<apx && ptoy>apy
                         ptox=ptox+1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
@@ -415,7 +414,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = 10;
                     end
                     add=add+frac;
-                    if add>=ent && ptox>=apx && ptoy<=apy
+                    if add>=ent && ptox>apx && ptoy<apy
                         ptox=ptox-1;
                         if NLOS(ptoy,ptox) == 5
                             atenuacion = 10;
