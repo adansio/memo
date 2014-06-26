@@ -14,7 +14,7 @@
 
 function test
 
-    global mapa_LOS mapa_NLOS current limit apx apy vary varx Ptx
+    global mapa_LOS mapa_NLOS current limit apx apy vary varx Ptx ch
             %  apx posicion del ap en eje x
             %  apy posicion del ap en eje y
             %  varx posicion de analisis en eje x
@@ -23,11 +23,14 @@ function test
     dim1 = 300;     %dimensiones del mapa
     dim2 = 300;
     
-    mapa_LOS = nan(dim1, dim2);         %   mapa con aps con linea vista   escala => 1 : 0.1 [m]
+    mapa_LOS = nan(dim1, dim2);         %   mapa con aps con linea vista   escala => 1 [pto en matriz] : 1 [m]
     mapa_NLOS = nan(dim1, dim2);        %   mapa con paredes y obstrucciones no linea vista
     current = 0;
     limit = 90;                         %   vuelta limite - Prx minima
-    APs = [50 89; 140 91; 230 89];     %   eventuales ptos con aps
+    APs = [                             %   eventuales ptos con aps, y sus características
+        50 89 15 1;                     %   x y Ptx[dBm] ch 
+        140 91 12 6; 
+        230 110 6 11];     
     
     for i=1:220
         mapa_NLOS(90, i) = 5;
@@ -37,12 +40,12 @@ function test
     end
         
     mapa_LOS = llenar(mapa_LOS);
-    Ptx = 15;   %  Ptx en dBm
-   
     
     for i=1:3
         apx = APs(i,1);
         apy = APs(i,2);
+        Ptx = APs(i,3);
+        ch =  APs(i,4);
 
         varx = apx;
         vary = apy;
