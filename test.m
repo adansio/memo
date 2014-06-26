@@ -20,23 +20,23 @@ function test
             %  varx posicion de analisis en eje x
             %  vary posicion de analisis en eje y
 
-    dim1 = 300;     %dimensiones del mapa
-    dim2 = 300;
+    dim1 = 900;     %dimensiones del mapa
+    dim2 = 900;
     
     mapa_LOS = nan(dim1, dim2);         %   mapa con aps con linea vista   escala => 1 [pto en matriz] : 1 [m]
     mapa_NLOS = nan(dim1, dim2);        %   mapa con paredes y obstrucciones no linea vista
-    current = 0;
-    limit = 90;                         %   vuelta limite - Prx minima
+    current = 0;    
+    limit = 250;                         %   vuelta limite - Prx minima
     APs = [                             %   eventuales ptos con aps, y sus características
-        50 89 15 1;                     %   x y Ptx[dBm] ch 
-        140 91 12 6; 
-        230 110 6 11];     
+        150 150 15 1;                     %   x y Ptx[dBm] ch 
+        300 150 12 6; 
+        500 150 6 11];     
     
-    for i=1:220
-        mapa_NLOS(90, i) = 5;
-    end
-    for i=90:220
-        mapa_NLOS(i, 220) = 5;
+    %for i=1:220
+    %    mapa_NLOS(90, i) = 5;
+    %end
+    for i=100:800
+        mapa_NLOS(i, 100) = 5;
     end
         
     mapa_LOS = llenar(mapa_LOS);
@@ -63,7 +63,7 @@ end
 %llena mapa_LOS con ruido ambiente -90 dB
 function mtr = llenar(mtr)  
     
-    mtr(1:100,1:100)=-90;
+    mtr(1:700,1:700)=-100;
 
 end
 
@@ -108,7 +108,7 @@ function [mtr, vx] = right(nlos, mtr, vx, vy, px, py, Pt)
     Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
     atenuacion = linea(nlos, px, py, vx, vy);
     Prx = Prx - atenuacion;
-    if Prx > -58
+    if Prx > -70
         mtr(vy,vx) = Prx;
     end        
 
@@ -121,7 +121,7 @@ function [mtr, vy] = down(nlos, mtr, vx, vy, px, py, Pt)
     Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
     atenuacion = linea(nlos, px, py, vx, vy);
     Prx = Prx - atenuacion;
-    if Prx > -58
+    if Prx > -70
         mtr(vy,vx) = Prx;
     end
     
@@ -134,7 +134,7 @@ function [mtr, vx] = left(nlos, mtr, vx, vy, px, py, Pt)
     Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
     atenuacion = linea(nlos, px, py, vx, vy);
     Prx = Prx - atenuacion;
-    if Prx > -58
+    if Prx > -70
         mtr(vy,vx) = Prx;
     end
     
@@ -147,7 +147,7 @@ function [mtr, vy] = up(nlos, mtr, vx, vy, px, py, Pt)
     Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
     atenuacion = linea(nlos, px, py, vx, vy);
     Prx = Prx - atenuacion;
-    if Prx > -58
+    if Prx > -70
         mtr(vy,vx) = Prx;
     end
     
