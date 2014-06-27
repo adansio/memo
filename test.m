@@ -20,17 +20,17 @@ function test
             %  varx posicion de analisis en eje x
             %  vary posicion de analisis en eje y
 
-    dim1 = 900;     %dimensiones del mapa
-    dim2 = 900;
+    dim1 = 1000;     %dimensiones del mapa
+    dim2 = 1000;
     
     mapa_LOS = nan(dim1, dim2);         %   mapa con aps con linea vista   escala => 1 [pto en matriz] : 1 [m]
     mapa_NLOS = nan(dim1, dim2);        %   mapa con paredes y obstrucciones no linea vista
     current = 0;    
-    limit = 250;                         %   vuelta limite - Prx minima
+    limit = 370;                         %   vuelta limite - Prx minima
     APs = [                             %   eventuales ptos con aps, y sus características
-        150 150 15 1;                     %   x y Ptx[dBm] ch 
-        300 150 12 6; 
-        500 150 6 11];     
+        250 250 15 1;                     %   x y Ptx[dBm] ch 
+        400 250 12 6; 
+        600 250 6 11];     
     
     %for i=1:220
     %    mapa_NLOS(90, i) = 5;
