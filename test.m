@@ -38,12 +38,12 @@ function test
         %500 600 12 6
         ];     
     
-    %for i=1:800
-    %    mapa_NLOS(90, i) = 5;
-    %end
+    for i=1:800
+        mapa_NLOS(260, i) = 5;
+    end
     for i=100:800
-        mapa_NLOS(i, 200) = 5;
-        mapa_NLOS(i, 150) = 5;
+        mapa_NLOS(i, 240) = 5;
+        %mapa_NLOS(i, 150) = 5;
     end
     
     UPr = -71;                               
@@ -265,7 +265,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptoy=ptoy-1;
-                        add=frac;
+                        add=add-ent;
                     end
                 end
                 ptox=ptox-1;
@@ -289,7 +289,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptoy=ptoy+1;
-                        add=frac;
+                        add=add-ent;
                     end
                 end
                 ptox=ptox+1;
@@ -322,7 +322,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptoy=ptoy-1;
-                        add=frac;
+                        add=add-ent;
                     end
                 end
                 ptox=ptox+1;
@@ -346,7 +346,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptoy=ptoy+1;
-                        add=frac;
+                        add=add-ent;
                     end
                 end
                 ptox=ptox-1;
@@ -380,7 +380,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptox=ptox-1;
-                        add = 0;
+                        add=add-ent;
                     end
                 end
                 ptoy=ptoy-1;
@@ -404,7 +404,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptox=ptox+1;
-                        add=0;
+                        add=add-ent;
                     end
                 end
                 ptoy=ptoy+1;
@@ -435,7 +435,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptox=ptox+1;
-                        add=0;
+                        add=add-ent;
                     end
                 end
                 ptoy=ptoy-1;
@@ -457,7 +457,7 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                             atenuacion = LOSS;
                         end
                         ptox=ptox-1;
-                        add=0;
+                        add=add-ent;
                     end
                 end
                 ptoy=ptoy+1;
