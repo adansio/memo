@@ -23,32 +23,34 @@ function test
             %  UPr Umbral de potencia de recepcion minimo [dBm]
             %  ch  channel
 
-    dim1 = 1000;     %dimensiones del mapa
-    dim2 = 1000;
+    dim1 = 400;     %dimensiones del mapa
+    dim2 = 730;
     
     mapa_LOS = nan(dim1, dim2);         %   mapa con aps con linea vista   escala => 1 [pto en matriz] : 1 [m]
-    mapa_NLOS = nan(dim1, dim2);        %   mapa con paredes y obstrucciones no linea vista
+    %mapa_NLOS = nan(dim1, dim2);        %   mapa con paredes y obstrucciones no linea vista
     current = 0;    
     %limit = 370;                            vuelta limite - Prx minima
     APs = [                             %   eventuales ptos con aps, y sus características
-        250 250 15 1;                   %   x y Ptx[dBm] ch 
-        %400 250 12 6; 
+        150 90 3 1;                   %   x y Ptx[dBm] ch 
+        200 70 5 6; 
         %600 250 6 11
         %120 600 9 11
         %500 600 12 6
         ];     
     
-    for i=1:800
-        mapa_NLOS(150, i) = 5;
-    end
-    for i=100:800
-        mapa_NLOS(i, 240) = 5;
-        mapa_NLOS(i, 200) = 5;
-        mapa_NLOS(i, 180) = 5;
-    end
+    %for i=1:800
+    %    mapa_NLOS(150, i) = 5;
+    %end
+    %for i=100:800
+    %    mapa_NLOS(i, 240) = 5;
+    %    mapa_NLOS(i, 200) = 5;
+    %    mapa_NLOS(i, 180) = 5;
+    %end
+    
+    mapa_NLOS=imread('edifc.jpg');
     
     UPr = -71;                               
-    mapa_LOS = llenar(mapa_LOS);
+    mapa_LOS = llenar(mapa_LOS,dim1,dim2);
     
     for i=1:size(APs,1)
         apx = APs(i,1);
@@ -62,19 +64,42 @@ function test
         mapa_LOS = espiral(mapa_NLOS, mapa_LOS, current, apx, apy, vary, varx, Ptx, UPr);
     end
 
-    % mapa_LOS
+    
     colormap('default')
+    %imagesc(mapa_LOS)
+    %colorbar
+    
     imagesc(mapa_LOS)
     colorbar
+    hold on
+    mapa_NLOS=reemplazar(mapa_NLOS);
+    %plot(mapa_NLOS)
+    hImg = imshow(mapa_NLOS); 
+    set(hImg, 'AlphaData', 0.4)
+    
+    
+    
 
 end
 
 %llena mapa_LOS con ruido ambiente -90 dB
-function mtr = llenar(mtr)  
+function mtr = llenar(mtr, dim1, dim2)  
     
-    mtr(1:1000,1:1000)=-90;
+    mtr(1:dim1,1:dim2)=-90;
 
 end
+
+function mapa_nlos = reemplazar(mapa_nlos)
+
+    for i = 1:size(mapa_nlos,1)
+        for j = 1:size(mapa_nlos,2)
+            if mapa_nlos(i,j) > 200
+                mapa_nlos(i,j)=NaN;
+            end
+        end
+    end
+end
+
 
 %avance en espiral
 function mtr = espiral(nlos, mtr, current, px, py, vy, vx, Pt, UPr)
@@ -202,10 +227,10 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
         if ptoy > apy 
             %   si el punto de analisis esta mas abajo que el ap
             while ptoy > apy 
-                if flag == 0 && NLOS(ptoy,ptox) == 5
+                if flag == 0 && NLOS(ptoy,ptox) == 0
                     atenuacion = atenuacion + LOSS;
                     flag = 1;
-                elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                     flag=0;
                 end
                 ptoy=ptoy-1;
@@ -214,10 +239,10 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
         else
             %   si el punto de analisis esta mas arriba que el ap
             while ptoy < apy
-                if flag == 0 && NLOS(ptoy,ptox) == 5
+                if flag == 0 && NLOS(ptoy,ptox) == 0
                     atenuacion = atenuacion + LOSS;
                     flag = 1;
-                elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                     flag=0;
                 end
                 ptoy=ptoy+1;
@@ -231,10 +256,10 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
         if ptox > apx 
             %   si el punto de analisis esta a la derecha del ap
             while ptox > apx 
-                if flag == 0 && NLOS(ptoy,ptox) == 5
+                if flag == 0 && NLOS(ptoy,ptox) == 0
                     atenuacion = atenuacion + LOSS;
                     flag = 1;
-                elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                     flag=0;
                 end
                 ptox=ptox-1;
@@ -243,10 +268,10 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
         else
             %    si el punto de analisis esta a la izquierda del ap
             while ptox < apx
-                if flag == 0 && NLOS(ptoy,ptox) == 5
+                if flag == 0 && NLOS(ptoy,ptox) == 0
                     atenuacion = atenuacion + LOSS;
                     flag = 1;
-                elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                     flag=0;
                 end
                 ptox=ptox+1;
@@ -270,19 +295,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox<=apx || ptoy<=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                         flag=0;
                     end
                     ptoy=ptoy-1;
                     add=add+frac;
                     if add>=ent && ptox>apx && ptoy>apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptoy=ptoy-1;
@@ -300,19 +325,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox>=apx || ptoy>=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                     end
                     ptoy=ptoy+1;
                     add=add+frac;
                     if add>=ent && ptox<apx && ptoy<apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptoy=ptoy+1;
@@ -339,19 +364,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox>=apx || ptoy<=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                         flag=0;
                     end
                     ptoy=ptoy-1;
                     add=add+frac;
                     if add>=ent  && ptox<apx && ptoy>apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptoy=ptoy-1;
@@ -369,19 +394,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox<=apx || ptoy >=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                         flag=0;
                     end
                     ptoy=ptoy+1;
                     add=add+frac;
                     if add>=ent && ptox>apx && ptoy<apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptoy=ptoy+1;
@@ -409,19 +434,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox<=apx && ptoy<=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                         flag=0;
                     end
                     ptox=ptox-1;
                     add=add+frac;
                     if add>=ent && ptox>apx && ptoy>apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptox=ptox-1;
@@ -439,19 +464,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox>=apx && ptoy>=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                         flag=0;
                     end
                     ptox=ptox+1;
                     add=add+frac;
                     if add>=ent && ptox<apx && ptoy<apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptox=ptox+1;
@@ -476,19 +501,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox>=apx && ptoy<=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                         flag=0;
                     end
                     ptox=ptox+1;
                     add=add+frac;
                     if add>=ent && ptox<apx && ptoy>apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptox=ptox+1;
@@ -504,19 +529,19 @@ function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
                     if ptox<=apx && ptoy>=apy
                         return
                     end
-                    if flag == 0 && NLOS(ptoy,ptox) == 5
+                    if flag == 0 && NLOS(ptoy,ptox) == 0
                         atenuacion = atenuacion + LOSS;
                         flag = 1;
-                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                    elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                         flag=0;
                     end
                     ptox=ptox-1;
                     add=add+frac;
                     if add>=ent && ptox>apx && ptoy<apy
-                        if flag == 0 && NLOS(ptoy,ptox) == 5
+                        if flag == 0 && NLOS(ptoy,ptox) == 0
                             atenuacion = atenuacion + LOSS;
                             flag = 1;
-                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 5
+                        elseif flag == 1 && NLOS(ptoy,ptox) ~= 0
                             flag=0;
                         end
                         ptox=ptox-1;
