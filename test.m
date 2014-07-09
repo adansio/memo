@@ -22,48 +22,48 @@ function test
             %  Ptx Potencia de transmision
             %  UPr Umbral de potencia de recepcion minimo [dBm]
             %  ch  channel
-
-    mapa_NLOS = imread('edifc.bmp');                                    % Lectura de mapa imagen, paredes
-    mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));               % Mapa con aps con linea vista   escala => 
-    mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));   % Llena matriz con NaN
-    current = 0;    
+    
+    % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
+    mapa_NLOS = imread('edifc.bmp');
+    
+    % Mapa con aps con linea vista, y luego se llena con NaN 
+    mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
+    mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));   
+    current = 0;   
+    
+    % Umbral de potencia de recepción
+    UPr = -76;                               
+     
+    % Dejar espacios en blanco del mapa como NaN
     mapa_NLOS=reemplazar(mapa_NLOS);
+    
+    % Ubicación estática de los access point
     APs = [                           %   eventuales ptos con aps, y sus características
-        130 90 3 1;                   %   x y Ptx[dBm] ch 
-        200 70 3 6;                   %     pasillo 3
-        270 70 3 11;
-        325 70 3 11;
-        390 70 3 6;
-        470 60 3 11;
+        220 150 3 1;                   %   x y Ptx[dBm] ch 
+        325 110 3 6;                   %     pasillo 3
+        430 110 3 11;
+        535 110 3 11;
+        640 110 3 6;
+        800 100 3 11;
         %   pasillo 3
-        60 180 3 1;
-        135 175 3 1;
-        220 175 3 6;
-        300 175 3 11;
-        380 175 3 1;
-        470 150 3 6;
+        %60 180 3 1;
+        %135 175 3 1;
+        %220 175 3 6;
+        %300 175 3 11;
+        %380 175 3 1;
+        %470 150 3 6;
         %   pasillo 4
-        80 320 3 1;
-        150 350 3 6;
-        260 340 3 11;
-        340 340 3 1;
-        450 340 3 1;
+        %80 320 3 1;
+        %150 350 3 6;
+        %260 340 3 11;
+        %340 340 3 1;
+        %450 340 3 1;
         %hall
-        610 255 12 1;
-        610 175 12 6;
+        %610 255 12 1;
+        %610 175 12 6;
         ];     
-    
-    %for i=1:800
-    %    mapa_NLOS(150, i) = 5;
-    %end
-    %for i=100:800
-    %    mapa_NLOS(i, 240) = 5;
-    %    mapa_NLOS(i, 200) = 5;
-    %    mapa_NLOS(i, 180) = 5;
-    %end
-    
-    UPr = -71;                               
-    
+
+    % Analisis para cada access point
     for i=1:size(APs,1)
         apx = APs(i,1);
         apy = APs(i,2);
@@ -72,10 +72,12 @@ function test
 
         varx = apx;
         vary = apy;
-    
+        
+        % Analizar radio de propagacion para cada access point
         mapa_LOS = espiral(mapa_NLOS, mapa_LOS, current, apx, apy, vary, varx, Ptx, UPr);
     end
 
+    % Desplegar imagen
     colormap('default')
     imagesc(mapa_LOS);
     colorbar
@@ -94,6 +96,7 @@ function mtr = llenar(mtr, dim1, dim2)
 
 end
 
+% espacios en blanco los deja como NaN
 function mapa_nlos = reemplazar(mapa_nlos)
 
     for i = 1:size(mapa_nlos,1)
@@ -215,8 +218,8 @@ function [mtr, vy, rm4] = up(nlos, mtr, vx, vy, px, py, Pt, UPr)
     
 end
 
-%Analiza ruta en direccion hacia AP, verificando si existe una pared en
-%curso
+% Analiza ruta en direccion hacia AP, verificando si existe una pared en
+% curso
 function atenuacion = linea (NLOS, apx, apy, ptox, ptoy)
     
     atenuacion=0;   % atenuacion inicial 0 dB
