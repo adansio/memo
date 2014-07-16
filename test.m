@@ -6,7 +6,7 @@
 %       Loss internal 5 GHz =   3.0 dB
 %
 %   caracteristicas access point Aruba iap-105
-%       GTx 2.4 GHz = max 3.0 -> 2.0dBi
+%       GTx 2.4 GHz = max 3.0 -> 2.0 dBi
 %       GTx 5 GHz = max 4.5 -> 4.0 dBi
 %       Loss internal 2.4 GHz = 1.5 dB
 %       Loss internal 5 GHz =   3.0 dB
@@ -39,27 +39,27 @@ function test
     mat_analisis2 = nan(size(mapa_NLOS,1), size(mapa_NLOS,2)); 
     
     % Umbral de potencia de recepción
-    UPr = -80;                               
+    UPr = -90;                               
      
     % Ubicación estática de los access point
     APs = [                           %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
-        %220 150 3 1;                 %   pasillo 3
+        220 150 3 1;                 %   pasillo 3
         
         %325 115 3 6;                   % a
         %325 200 3 6;                   % b
-        325 150 3 6;                   % c
+        %325 150 3 6;                   % c
         
         %430 115 3 11;                  % a
         %430 115 3 11;                  % b
-        430 150 3 11;                   % c
+        %430 150 3 11;                   % c
         
         %535 115 3 11;                  % a
         %535 200 3 11;                  % b
-        535 150 3 11;                   % c
+        %535 150 3 11;                   % c
         
         %640 115 3 6;                  % a
         %640 115 3 6;                  % b
-        640 150 3 11;                  % c
+        %640 150 3 11;                  % c
         
         %800 110 3 11;
         
@@ -77,8 +77,8 @@ function test
         %260 570 3 1;
         %125 535 3 1;
         %hall
-        %1020 430 12 1;
-        %1020 295 12 6;
+        %1020 430 24.5 1;              % 21 dBm + 3.5 dBi
+        %1020 285 24.5 6;             % 21 dBm + 3 dBi
         ];     
 
     % Analisis para cada access point
@@ -109,16 +109,16 @@ function test
     mapa_NLOS=reemplazar(mapa_NLOS);
     
     % Desplegar imagen
-    colormap('default')
+    colormap('default');
     imagesc(mapa_LOS);
     %imagesc(mat_analisis1);
     %imagesc(mat_analisis2);
     colorbar
     hold on
     
-    %dlmwrite('matriz_traslapes.txt',mat_analisis1,'delimiter', '\t');
-    %dlmwrite('mapa_LOS.txt',mapa_LOS,'delimiter', '\t');
-    %dlmwrite('matriz_traslapes-aver.txt',mat_analisis2,'delimiter', '\t');
+    %dlmwrite('matriz_traslapes-c.txt',mat_analisis1,'delimiter', '\t');
+    %dlmwrite('mapa_LOS.txt-c',mapa_LOS,'delimiter', '\t');
+    %dlmwrite('matriz_traslapes-aver-c.txt',mat_analisis2,'delimiter', '\t');
     
     hImg = imagesc(mapa_NLOS); 
     set(hImg, 'AlphaData', 0.3)
@@ -198,9 +198,9 @@ end
 
 % avanzar a la derecha
 function [mtr, vx, rm1, mat_analisis1, mat_analisis2] = right(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2)
-
-	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    vx=vx+1;
+ 
+	vx=vx+1;
+    if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)  
 	    Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
