@@ -31,7 +31,8 @@ function test
     mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));   
     current = 0;   
     
-    % matriz con traslape de coberturas
+    % matriz con traslape de coberturas (conteo de cuantas señales se
+    % traslapan)
     mat_analisis1 = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));    
     mat_analisis1 = llenar0(mat_analisis1,size(mapa_NLOS,1), size(mapa_NLOS,2));
     
@@ -39,49 +40,53 @@ function test
     mat_analisis2 = nan(size(mapa_NLOS,1), size(mapa_NLOS,2)); 
     
     % Umbral de potencia de recepción
-    UPr = -90;                               
+    UPr = -80;                               
      
     % Ubicación estática de los access point
-    APs = [                           %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
-        220 150 3 1;                 %   pasillo 3
+    APs = [                          %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
+        %220 150 5 1;                 %   pasillo 3
         
-        %325 115 3 6;                   % a
-        %325 200 3 6;                   % b
-        %325 150 3 6;                   % c
+        %325 115 5 6;                   % a     posicion actual
+        %325 200 5 6;                   % b     alternados
+        %325 150 5 6;                   % c     al centro
+        %325 115 5 6;                   % d      alternados - inverso
         
-        %430 115 3 11;                  % a
-        %430 115 3 11;                  % b
-        %430 150 3 11;                   % c
+        %430 115 5 11;                  % a
+        %430 115 5 11;                  % b
+        430 150 5 11;                  % c
+        %430 200 5 11;                  % d
         
-        %535 115 3 11;                  % a
-        %535 200 3 11;                  % b
-        %535 150 3 11;                   % c
+        %535 115 5 11;                  % a
+        %535 200 5 11;                  % b
+        535 150 5 11;                  % c
+        %535 115 5 11;                  % d
         
-        %640 115 3 6;                  % a
-        %640 115 3 6;                  % b
-        %640 150 3 11;                  % c
+        %640 115 5 6;                  % a
+        %640 115 5 6;                  % b
+        640 150 5 11;                 % c
+        %640 200 5 6;                  % d
         
-        %800 110 3 11;
+        %800 110 5 11;
         
         %   pasillo 2
-        %100 300 3 1;
-        %215 300 3 1;
-        %365 300 3 6;
-        %495 300 3 11;
-        %630 300 3 1;
-        %800 250 3 6;
+        %100 300 5 1;
+        %215 300 5 1;
+        %365 300 6 6;
+        %495 300 6 11;
+        %630 300 6 1;
+        %800 250 5 6;
         %   pasillo 1
-        %740 565 3 1;
-        %560 565 3 6;
-        %260 340 3 11;
-        %260 570 3 1;
-        %125 535 3 1;
+        %740 565 5 1;
+        %560 565 5 6;
+        %430 565 8 11;
+        %260 580 5 1;               % 3 dBm + 2 dBi
+        %125 535 8 1;               % 6 dBm + 3 dBi
         %hall
-        %1020 430 24.5 1;              % 21 dBm + 3.5 dBi
-        %1020 285 24.5 6;             % 21 dBm + 3 dBi
+        %1020 430 24 1;             % 21 dBm + 3 dBi
+        %1020 285 24 6;             % 21 dBm + 3 dBi
         ];     
 
-    % Analisis para cada access point
+    % Analisis de propagacion para cada access point
     for i=1:size(APs,1)
         apx = APs(i,1);
         apy = APs(i,2);
@@ -117,8 +122,9 @@ function test
     hold on
     
     %dlmwrite('matriz_traslapes-c.txt',mat_analisis1,'delimiter', '\t');
-    %dlmwrite('mapa_LOS.txt-c',mapa_LOS,'delimiter', '\t');
+    %dlmwrite('mapa_LOS-c.txt',mapa_LOS,'delimiter', '\t');
     %dlmwrite('matriz_traslapes-aver-c.txt',mat_analisis2,'delimiter', '\t');
+    
     
     hImg = imagesc(mapa_NLOS); 
     set(hImg, 'AlphaData', 0.3)
@@ -204,7 +210,7 @@ function [mtr, vx, rm1, mat_analisis1, mat_analisis2] = right(nlos, mtr, vx, vy,
 	    Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
-	    if Prx > UPr
+        if Prx > UPr && (Prx > mtr(vy,vx) || isnan(mtr(vy,vx)))
 	        mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
 	        rm1 = true;
@@ -213,12 +219,12 @@ function [mtr, vx, rm1, mat_analisis1, mat_analisis2] = right(nlos, mtr, vx, vy,
             else
                 mat_analisis2(vy,vx) = mat_analisis2(vy,vx) + Prx;
             end  
-	    else
+        else
 	        rm1 = false;
-	    end 
-	else
+        end 
+    else
 		rm1 = false;
-	end
+    end
 
 end
 
@@ -230,7 +236,7 @@ function [mtr, vy, rm2, mat_analisis1, mat_analisis2] = down(nlos, mtr, vx, vy, 
 	    Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
-	    if Prx > UPr
+	    if Prx > UPr && (Prx > mtr(vy,vx) || isnan(mtr(vy,vx)))
 	        mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
 	        rm2 = true;
@@ -256,7 +262,7 @@ function [mtr, vx, rm3, mat_analisis1, mat_analisis2] = left(nlos, mtr, vx, vy, 
         Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
         atenuacion = linea(nlos, px, py, vx, vy);
         Prx = Prx - atenuacion;
-        if Prx > UPr
+        if Prx > UPr && (Prx > mtr(vy,vx) || isnan(mtr(vy,vx)))
             mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
             rm3 = true;
@@ -282,7 +288,7 @@ function [mtr, vy, rm4, mat_analisis1, mat_analisis2] = up(nlos, mtr, vx, vy, px
 	    Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
-	    if Prx > UPr
+	    if Prx > UPr && (Prx > mtr(vy,vx) || isnan(mtr(vy,vx)))
 	        mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
 	        rm4 = true;
@@ -303,15 +309,12 @@ end
 function atenuacion = atenua(atenuacion, tipo)
 
     switch tipo
-        case 0
+        case 0      % Pared de concreto gruesa
             atenuacion = atenuacion + 12;
-            %fprintf('1 %d   ', atenuacion);
-        case 32
+        case 32     % Pared de concreto media
             atenuacion = atenuacion + 6;
-            %fprintf('2 %d   ', atenuacion);
-        case 48
-            atenuacion = atenuacion + 3;
-            %fprintf('3 %d   ', atenuacion);
+        case 48     % Pared de concreto delgada
+            atenuacion = atenuacion + 2;
         otherwise
             fprintf('%d  ',tipo);
             
@@ -668,6 +671,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     add=add+frac;
                     if add>=ent && ptox>apx && ptoy<apy
                         if flag == 0 && ( NLOS(ptoy,ptox) == 0 || NLOS(ptoy,ptox) == 32 || NLOS(ptoy,ptox) == 48 )
+                            tipo = NLOS (ptoy,ptox);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
                         elseif flag == 1 && NLOS(ptoy,ptox) == 255
