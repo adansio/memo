@@ -36,11 +36,9 @@ function test
     mat_analisis1 = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));    
     mat_analisis1 = llenar0(mat_analisis1,size(mapa_NLOS,1), size(mapa_NLOS,2));
     
-    % matriz con promedio de cobertura al traslapar
-    mat_analisis2 = nan(size(mapa_NLOS,1), size(mapa_NLOS,2)); 
     
     % Umbral de potencia de recepción
-    UPr = -80;                               
+    UPr = -70;                               
      
     % Ubicación estática de los access point
     APs = [                          %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
@@ -63,7 +61,7 @@ function test
         
         %640 115 5 6;                  % a
         %640 115 5 6;                  % b
-        640 150 5 11;                 % c
+        %640 150 5 11;                 % c
         %640 200 5 6;                  % d
         
         %800 110 5 11;
@@ -97,16 +95,7 @@ function test
         vary = apy;
         
         % Analizar radio de propagacion para cada access point
-        [mapa_LOS, mat_analisis1, mat_analisis2] = espiral(mapa_NLOS, mapa_LOS, current, apx, apy, vary, varx, Ptx, UPr, mat_analisis1, mat_analisis2);
-    end
-    
-    for i=1:size(mapa_NLOS,1)
-        for j=1:size(mapa_NLOS,2)
-            if isnan(mat_analisis2(i,j))
-            else
-                mat_analisis2(i,j) = mat_analisis2(i,j)/mat_analisis1(i,j);
-            end
-        end
+        [mapa_LOS, mat_analisis1] = espiral(mapa_NLOS, mapa_LOS, current, apx, apy, vary, varx, Ptx, UPr, mat_analisis1);
     end
     
     
@@ -117,13 +106,11 @@ function test
     colormap('default');
     imagesc(mapa_LOS);
     %imagesc(mat_analisis1);
-    %imagesc(mat_analisis2);
     colorbar
     hold on
     
     %dlmwrite('matriz_traslapes-c.txt',mat_analisis1,'delimiter', '\t');
     %dlmwrite('mapa_LOS-c.txt',mapa_LOS,'delimiter', '\t');
-    %dlmwrite('matriz_traslapes-aver-c.txt',mat_analisis2,'delimiter', '\t');
     
     
     hImg = imagesc(mapa_NLOS); 
@@ -159,7 +146,7 @@ end
 
 
 %avance en espiral
-function [mtr, mat_analisis1, mat_analisis2] = espiral(nlos, mtr, current, px, py, vy, vx, Pt, UPr, mat_analisis1, mat_analisis2)
+function [mtr, mat_analisis1] = espiral(nlos, mtr, current, px, py, vy, vx, Pt, UPr, mat_analisis1)
     
     %variable booleana - rango maximo de cobertura para cierta potencia
     aux1 = 1; aux2 = 1; aux3 = 1; aux4 = 1;
@@ -172,14 +159,14 @@ function [mtr, mat_analisis1, mat_analisis2] = espiral(nlos, mtr, current, px, p
         step=0;
         while step<current 
             step=step+1;
-            [mtr, vx, rm1, mat_analisis1, mat_analisis2]=right(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2);
+            [mtr, vx, rm1, mat_analisis1]=right(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1);
             aux1 = aux1 || rm1;
         end
         
         step=0;
         while step<current
             step=step+1;
-            [mtr, vy, rm2, mat_analisis1, mat_analisis2]=down(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2);
+            [mtr, vy, rm2, mat_analisis1]=down(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1);
             aux2 = aux2 || rm2;
         end
         
@@ -187,14 +174,14 @@ function [mtr, mat_analisis1, mat_analisis2] = espiral(nlos, mtr, current, px, p
         step=0;
         while step<current
             step=step+1;
-            [mtr, vx, rm3, mat_analisis1, mat_analisis2] = left(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2);
+            [mtr, vx, rm3, mat_analisis1] = left(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1);
             aux3 = aux3 || rm3;
         end
         
         step=0;
         while step<current
             step=step+1;
-            [mtr, vy, rm4, mat_analisis1, mat_analisis2] = up(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2);
+            [mtr, vy, rm4, mat_analisis1] = up(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1);
             aux4 = aux4 || rm4;
         end
         
@@ -203,7 +190,7 @@ function [mtr, mat_analisis1, mat_analisis2] = espiral(nlos, mtr, current, px, p
 end
 
 % avanzar a la derecha
-function [mtr, vx, rm1, mat_analisis1, mat_analisis2] = right(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2)
+function [mtr, vx, rm1, mat_analisis1] = right(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1)
  
 	vx=vx+1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)  
@@ -214,11 +201,6 @@ function [mtr, vx, rm1, mat_analisis1, mat_analisis2] = right(nlos, mtr, vx, vy,
 	        mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
 	        rm1 = true;
-            if isnan(mat_analisis2(vy,vx))
-                mat_analisis2(vy,vx) = Prx;
-            else
-                mat_analisis2(vy,vx) = mat_analisis2(vy,vx) + Prx;
-            end  
         else
 	        rm1 = false;
         end 
@@ -229,7 +211,7 @@ function [mtr, vx, rm1, mat_analisis1, mat_analisis2] = right(nlos, mtr, vx, vy,
 end
 
 %avanzar hacia abajo
-function [mtr, vy, rm2, mat_analisis1, mat_analisis2] = down(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2)
+function [mtr, vy, rm2, mat_analisis1] = down(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1)
 
     vy=vy+1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
@@ -240,11 +222,6 @@ function [mtr, vy, rm2, mat_analisis1, mat_analisis2] = down(nlos, mtr, vx, vy, 
 	        mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
 	        rm2 = true;
-            if isnan(mat_analisis2(vy,vx))
-                mat_analisis2(vy,vx) = Prx;
-            else
-                mat_analisis2(vy,vx) = mat_analisis2(vy,vx) + Prx;
-            end
 	    else
 	        rm2 = false;
 	    end
@@ -255,7 +232,7 @@ function [mtr, vy, rm2, mat_analisis1, mat_analisis2] = down(nlos, mtr, vx, vy, 
 end
 
 %avanzar hacia la izquierda
-function [mtr, vx, rm3, mat_analisis1, mat_analisis2] = left(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2)
+function [mtr, vx, rm3, mat_analisis1] = left(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1)
 
     vx=vx-1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
@@ -266,11 +243,6 @@ function [mtr, vx, rm3, mat_analisis1, mat_analisis2] = left(nlos, mtr, vx, vy, 
             mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
             rm3 = true;
-            if isnan(mat_analisis2(vy,vx))
-                mat_analisis2(vy,vx) = Prx;
-            else
-                mat_analisis2(vy,vx) = mat_analisis2(vy,vx) + Prx;
-            end
         else
             rm3 = false;
         end
@@ -281,7 +253,7 @@ function [mtr, vx, rm3, mat_analisis1, mat_analisis2] = left(nlos, mtr, vx, vy, 
 end
 
 %avanzar hacia arriba
-function [mtr, vy, rm4, mat_analisis1, mat_analisis2] = up(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1, mat_analisis2)
+function [mtr, vy, rm4, mat_analisis1] = up(nlos, mtr, vx, vy, px, py, Pt, UPr, mat_analisis1)
 
     vy=vy-1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
@@ -292,11 +264,6 @@ function [mtr, vy, rm4, mat_analisis1, mat_analisis2] = up(nlos, mtr, vx, vy, px
 	        mtr(vy,vx) = Prx;
             mat_analisis1(vy,vx) = mat_analisis1(vy,vx) + 1;
 	        rm4 = true;
-            if isnan(mat_analisis2(vy,vx))
-                mat_analisis2(vy,vx) = Prx;
-            else
-                mat_analisis2(vy,vx) = mat_analisis2(vy,vx) + Prx;
-            end
 	    else
 	        rm4 = false;
 	    end
