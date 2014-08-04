@@ -77,7 +77,8 @@ function test2
         %1020 285 24 6;             % 21 dBm + 3 dBi
         ];     
     
-    
+    % llena matrices tridimencional a crear con NaN
+        m_ap = nan(size(mapa_NLOS,1), size(mapa_NLOS,2),size(APs,1));
 
     % Analisis de propagacion para cada access point
     for i=1:size(APs,1)
@@ -86,16 +87,11 @@ function test2
         Ptx = APs(i,3);
         ch =  APs(i,4);
         
-        % llena matrices a crear con NaN
-        eval(['m_ap' num2str(i) '= nan(size(mapa_NLOS,1), size(mapa_NLOS,2));']);
-
         varx = apx;
         vary = apy;
         
-        
         % Analizar radio de propagacion para cada access point
-        eval(['m_ap' num2str(i) ' = espiral(mapa_NLOS, m_ap' num2str(i) ', apx, apy, vary, varx, Ptx, UPr);']);
-        eval(['dlmwrite(''m_ap-' num2str(i) '.txt'',m_ap' num2str(i) ',''delimiter'', ''\t'');']);
+        m_ap(:,:,i) = espiral(mapa_NLOS, m_ap(:,:,i), apx, apy, vary, varx, Ptx, UPr);
 
     end
     
@@ -103,24 +99,26 @@ function test2
     % Dejar espacios en blanco del mapa como NaN
     mapa_NLOS=reemplazar(mapa_NLOS);
     
-    %for i = 1:size(mapa_NLOS,1)
-    %    for j = 1:size(mapa_NLOS,2)
-    %        if  isnan(mapa_NLOS(i,j))
-    %        else
-    %            mapa_LOS(i,j)=max([m_ap1(i,j),m_ap2(i,j),m_ap3(i,j)]);
-    %        end
-    %    end
-    %end
+
+    for i = 1:size(mapa_NLOS,1)
+        for j = 1:size(mapa_NLOS,2) 
+            if  isnan(mapa_NLOS(i,j))
+            else
+                mapa_LOS(i,j)=max(m_ap(i,j,:));
+            end
+        end
+    end
     
     % Desplegar imagen
     colormap('default');
-    %imagesc(mapa_LOS);
+    imagesc(mapa_LOS);
     colorbar
     hold on
+    %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
+    %save('m_ap.mat','m_ap');
     
-    
-    %hImg = imagesc(mapa_NLOS); 
-    %set(hImg, 'AlphaData', 0.3)
+    hImg = imagesc(mapa_NLOS); 
+    set(hImg, 'AlphaData', 0.3)
     
     
 end
