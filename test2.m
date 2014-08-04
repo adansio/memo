@@ -14,7 +14,7 @@
 
 function test2
 
-    global mapa_LOS mapa_NLOS current apx apy vary varx Ptx UPr ch
+    global mapa_LOS mapa_NLOS apx apy vary varx Ptx UPr ch
             %  apx posicion del ap en eje x
             %  apy posicion del ap en eje y
             %  varx posicion de analisis en eje x
@@ -28,11 +28,10 @@ function test2
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
-    mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));   
-    current = 0;   
+    mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));      
     
     % Umbral de potencia de recepción
-    UPr = -75;                               
+    UPr = -70;                               
      
     % Ubicación estática de los access point
     APs = [                          %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
@@ -93,8 +92,10 @@ function test2
         varx = apx;
         vary = apy;
         
+        
         % Analizar radio de propagacion para cada access point
-        eval(['m_ap' num2str(i) ' = espiral(mapa_NLOS, m_ap' num2str(i) ', current, apx, apy, vary, varx, Ptx, UPr);']);
+        eval(['m_ap' num2str(i) ' = espiral(mapa_NLOS, m_ap' num2str(i) ', apx, apy, vary, varx, Ptx, UPr);']);
+        eval(['dlmwrite(''m_ap-' num2str(i) '.txt'',m_ap' num2str(i) ',''delimiter'', ''\t'');']);
 
     end
     
@@ -117,13 +118,9 @@ function test2
     colorbar
     hold on
     
-    %dlmwrite('mapa_LOS-c.txt',mapa_LOS,'delimiter', '\t');
-    dlmwrite('m_ap-1.txt',m_ap1,'delimiter', '\t');
-    dlmwrite('m_ap-2.txt',m_ap2,'delimiter', '\t');
-    dlmwrite('m_ap-3.txt',m_ap3,'delimiter', '\t');
     
     %hImg = imagesc(mapa_NLOS); 
-    set(hImg, 'AlphaData', 0.3)
+    %set(hImg, 'AlphaData', 0.3)
     
     
 end
@@ -149,8 +146,10 @@ end
 
 
 %avance en espiral
-function [mtr] = espiral(nlos, mtr, current, px, py, vy, vx, Pt, UPr)
+function [mtr] = espiral(nlos, mtr, px, py, vy, vx, Pt, UPr)
     
+    current = 0;
+
     %variable booleana - rango maximo de cobertura para cierta potencia
     aux1 = 1; aux2 = 1; aux3 = 1; aux4 = 1;
     
