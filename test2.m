@@ -95,6 +95,8 @@ function test2
 
     end
     
+    % grafo para determinar interseccion entre access points
+    grf_inter = intersecciones(m_ap);
     
     % Dejar espacios en blanco del mapa como NaN
     mapa_NLOS=reemplazar(mapa_NLOS);
@@ -736,3 +738,6 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
              
     
 end
+
+function grf_inter = intersecciones(m_ap)
+
