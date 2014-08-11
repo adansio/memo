@@ -31,7 +31,7 @@ function test2
     mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));      
     
     % Umbral de potencia de recepción
-    UPr = -70;                               
+    UPr = -85;                               
      
     % Ubicación estática de los access point
     APs = [                          %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
@@ -49,23 +49,23 @@ function test2
         
         %535 115 5 11;                  % a
         %535 200 5 11;                  % b
-        %535 150 5 11;                  % c
+        535 150 5 11;                  % c
         %535 115 5 11;                  % d
         
         %640 115 5 6;                  % a
         %640 115 5 6;                  % b
-        %640 150 5 11;                 % c
+        640 150 5 11;                 % c
         %640 200 5 6;                  % d
         
-        %800 110 5 11;
+        800 110 5 11;
         
         %   pasillo 2
-        %100 300 5 1;
-        %215 300 5 1;
-        %365 300 6 6;
-        %495 300 6 11;
-        %630 300 6 1;
-        %800 250 5 6;
+        100 300 5 1;
+        215 300 5 1;
+        365 300 6 6;
+        495 300 6 11;
+        630 300 6 1;
+        800 250 5 6;
         %   pasillo 1
         %740 565 5 1;
         %560 565 5 6;
@@ -92,36 +92,33 @@ function test2
         
         % Analizar radio de propagacion para cada access point
         m_ap(:,:,i) = espiral(mapa_NLOS, m_ap(:,:,i), apx, apy, vary, varx, Ptx, UPr);
+        fprintf('%d  ',i);
 
     end
-    
-    % grafo para determinar interseccion entre access points
-    grf_inter = intersecciones(m_ap,size(APs,1));
     
     % Dejar espacios en blanco del mapa como NaN
     mapa_NLOS=reemplazar(mapa_NLOS);
     
 
-    for i = 1:size(mapa_NLOS,1)
-        for j = 1:size(mapa_NLOS,2) 
-            if  isnan(mapa_NLOS(i,j))
-            else
-                mapa_LOS(i,j)=max(m_ap(i,j,:));
-            end
-        end
-    end
+    %for i = 1:size(mapa_NLOS,1)
+    %    for j = 1:size(mapa_NLOS,2) 
+    %        if  isnan(mapa_NLOS(i,j))
+    %        else
+    %            mapa_LOS(i,j)=max(m_ap(i,j,:));
+    %        end
+    %    end
+    %end
     
     % Desplegar imagen
-    colormap('default');
-    imagesc(mapa_LOS);
-    colorbar
-    hold on
+    %colormap('default');
+    %imagesc(mapa_LOS);
+    %colorbar
+    %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    %save('m_ap.mat','m_ap');
+    save('m_ap-c.mat','m_ap');
     
-    hImg = imagesc(mapa_NLOS); 
-    set(hImg, 'AlphaData', 0.3)
-    
+    %hImg = imagesc(mapa_NLOS); 
+    %set(hImg, 'AlphaData', 0.3)
     
 end
 
@@ -146,7 +143,7 @@ end
 
 
 %avance en espiral
-function [mtr] = espiral(nlos, mtr, px, py, vy, vx, Pt, UPr)
+function mtr = espiral(nlos, mtr, px, py, vy, vx, Pt, UPr)
     
     current = 0;
 
@@ -279,7 +276,7 @@ function atenuacion = atenua(atenuacion, tipo)
         case 32     % Pared de concreto media
             atenuacion = atenuacion + 6;
         case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2;
+            atenuacion = atenuacion + 3;
         otherwise
             fprintf('%d  ',tipo);
             
@@ -737,13 +734,4 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
 
              
     
-end
-
-% num_ap -> numero de access point
-function grf_inter = intersecciones(m_ap,num_ap)
-
-    for i=1:num_ap
-        [row,col] = find(isfinite(m_ap(:,:,i)));
-        
-    end
 end
