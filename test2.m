@@ -39,23 +39,23 @@ function test2
         
         %325 115 5 6;                   % a     posicion actual
         %325 200 5 6;                   % b     alternados
-        325 150 5 6;                   % c     al centro
-        %325 115 5 6;                   % d      alternados - inverso
+        %325 150 5 6;                   % c     al centro
+        325 115 5 6;                   % d      alternados - inverso
         
         %430 115 5 11;                  % a
         %430 115 5 11;                  % b
-        430 150 5 11;                  % c
-        %430 200 5 11;                  % d
+        %430 150 5 11;                  % c
+        430 200 5 11;                  % d
         
         %535 115 5 11;                  % a
         %535 200 5 11;                  % b
-        535 150 5 11;                  % c
-        %535 115 5 11;                  % d
+        %535 150 5 11;                  % c
+        535 115 5 11;                  % d
         
         %640 115 5 6;                  % a
         %640 115 5 6;                  % b
-        640 150 5 11;                 % c
-        %640 200 5 6;                  % d
+        %640 150 5 11;                 % c
+        640 200 5 6;                  % d
         
         800 110 5 11;
         
@@ -115,7 +115,7 @@ function test2
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap-c.mat','m_ap');
+    save('m_ap-d.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -276,7 +276,7 @@ function atenuacion = atenua(atenuacion, tipo)
         case 32     % Pared de concreto media
             atenuacion = atenuacion + 6;
         case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 3;
+            atenuacion = atenuacion + 2;
         otherwise
             fprintf('%d  ',tipo);
             

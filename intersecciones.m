@@ -23,8 +23,9 @@ function intersecciones(m_ap)
             [row2,col2] = find(isfinite(m_ap(:,:,j)));
             % si existe interseccion o traslapes de coberturas, entonces
             % se establece enlaces entre nodos
-            if  ~isempty(intersect([row1,col1],[row2,col2],'rows'))
-                grafo(i,j)=1;
+            aux = intersect([row1,col1],[row2,col2],'rows');
+            if  ~isempty(aux)
+                grafo(i,j)=size(aux,1);
             end
         end
         
@@ -40,9 +41,29 @@ function intersecciones(m_ap)
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
    
-    grafo = grafo' + grafo;
+    % repliega matriz triangular superior en matriz triangular inferior
+    grafo = grafo' + grafo
+    fprintf('\n ');
     
-    dlmwrite('grafo-c.txt',grafo,'delimiter', '\t');
+    % cuenta cuantos nodos se interfieren en total
+    size(find(grafo),1)
+    
+    % grado: 1 -> almacena cuantos nodos se interfieren por cada fila.
+    %       2 -> indice de correspondencia en grafo.
+    %       3 -> suma de la columna, para determinar cual columna presenta
+    %           mas traslape que otra.
+    grado(size(m_ap,3),3)=0;
+    
+    for i=1:size(m_ap,3)
+        grado(i,1) = size(find(grafo(:,i)),1);
+        grado(i,2) = i;
+        grado(i,3) = sum(grafo(:,i));
+    end
+    
+    sortrows(grado,-1)
+    
+    
+    %dlmwrite('grafo-c.txt',grafo,'delimiter', '\t');
     
 end
 
