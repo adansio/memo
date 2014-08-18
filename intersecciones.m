@@ -60,11 +60,29 @@ function intersecciones(m_ap)
         grado(i,3) = sum(grafo(:,i));
     end
     
-    sortrows(grado,-1)
-    
+    grado = ordenar(sortrows(grado,-1));
+    grado
     
     %dlmwrite('grafo-c.txt',grafo,'delimiter', '\t');
     
+end
+
+% ordena en orden decreciente la matriz grado, primero por la cantidad de
+% nodos que se interfieren por cada fila y luego por la cantidad de espacio
+% traslapado en total
+function grado_ = ordenar(grado_)
+    
+    for i=1:unique(grado_(:,1))
+        if grado_(i,1) == grado_(i+1,1)
+            up=i;
+            down=i+1;
+            while grado_(up,1)==grado_(down+1,1)
+                down = down+1;
+            end
+            grado_(up:down,:)=sortrows(grado_(up:down,:),-3);
+        end
+    end
+
 end
 
 function mapa_nlos = reemplazar(mapa_nlos)
@@ -77,7 +95,6 @@ function mapa_nlos = reemplazar(mapa_nlos)
         end
     end
 end
-
 
 function mtr = llenar(mtr, dim1, dim2)  
     
