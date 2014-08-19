@@ -72,14 +72,18 @@ end
 % traslapado en total
 function grado_ = ordenar(grado_)
     
-    for i=1:unique(grado_(:,1))
-        if grado_(i,1) == grado_(i+1,1)
+    flag =0;
+    for i=1:size(grado_,1)-1
+        if grado_(i,1)==grado_(i+1,1) && flag==0
             up=i;
             down=i+1;
-            while grado_(up,1)==grado_(down+1,1)
+            flag = 1;
+            while down<size(grado_,1) && grado_(up,1)==grado_(down+1,1)
                 down = down+1;
             end
             grado_(up:down,:)=sortrows(grado_(up:down,:),-3);
+        elseif grado_(i,1)~=grado_(i+1,1)
+            flag=0;
         end
     end
 
