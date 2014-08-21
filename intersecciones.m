@@ -61,6 +61,8 @@ function intersecciones(m_ap)
     end
     
     grado = ordenar(sortrows(grado,-1));
+    
+    grado = asignar(grafo, grado, size(m_ap,3));
     grado
     
     %dlmwrite('grafo-c.txt',grafo,'delimiter', '\t');
@@ -89,17 +91,56 @@ function grado_ = ordenar(grado_)
 
 end
 
-function grado_ = asignar(grafo_ grado_)
+function grado_ = asignar(grafo_, grado_, num_ap)
 
-    for i=1:size(m_ap3)
-       
+    % conteo de canales utilizados
+    canales(4)=0;
+    
+    % recorrer matriz grado
+    for i=1:num_ap
+        % recorrer matriz grafo, analizar cada interseccion
+        for j=1:num_ap
+            if grafo_(grado_(i,2),j)~=0 
+                % si ya tiene un canal asignado
+                if grado_(find(grado_(:,2),j),4)~=0
+                    canales(grado_(find(grado_(:,2),j),4)) = canales(grado_(find(grado_(:,2),j),4)) + 1;
+                end
+            end
+        end
+        
+        if nnz(canales)==0
+            grado_(i,4) = 1;
+            canales(1)=canales(1)+1;
+        elseif nnz(canales)==1
+            grado_(i,4) = 2;
+            canales(2)=canales(2)+1;
+        elseif nnz(canales)==2
+            grado_(i,4) = 3;
+            canales(3)=canales(3)+1;
+        elseif nnz(canales)==3
+            grado_(i,4) = 4;
+            canales(4)=canales(4)+1;
+        elseif nnz(canales)==4
+            % minimo, almacena minimo espacio de traslape de superficies,
+            % se inicializa con el maximo valor de grafico_
+            minimo=max(max(grafo_));
+            for j=1:i-1
+                % aux almacena superficie de contacto entre los 2 valores
+                % involucrados
+                aux=grafo_(grado_(i,2),grado_(j,2));
+                minimo=min(minimo, aux);
+            end
+        end
+        
+        canales(:)=0;
         % verificar si algun vecino de i tiene ID asignado
         %   si no existe vecino con asignacion, asignar el primero
         %   si existen 3 o menos vecinos asignados, asignar el sgte ID
         %   si existe 4 o mas vecinos asignados, asignar ID del nodo con
         %       menor superficie traslapada o el menos ocupado?
-        
     end
+    
+    canales
     
 end
 
