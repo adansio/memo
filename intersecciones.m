@@ -28,7 +28,6 @@ function intersecciones(m_ap)
                 grafo(i,j)=size(aux,1);
             end
         end
-        
     end
     
     %mapa_NLOS=reemplazar(mapa_NLOS);
@@ -52,7 +51,8 @@ function intersecciones(m_ap)
     %       2 -> indice de correspondencia en grafo.
     %       3 -> suma de la columna, para determinar cual columna presenta
     %           mas traslape que otra.
-    grado(size(m_ap,3),3)=0;
+    %       4 -> para posteriormente asignar el canal correspondiente
+    grado(size(m_ap,3),4)=0;
     
     for i=1:size(m_ap,3)
         grado(i,1) = size(find(grafo(:,i)),1);
@@ -87,6 +87,20 @@ function grado_ = ordenar(grado_)
         end
     end
 
+end
+
+function grado_ = asignar(grafo_ grado_)
+
+    for i=1:size(m_ap3)
+       
+        % verificar si algun vecino de i tiene ID asignado
+        %   si no existe vecino con asignacion, asignar el primero
+        %   si existen 3 o menos vecinos asignados, asignar el sgte ID
+        %   si existe 4 o mas vecinos asignados, asignar ID del nodo con
+        %       menor superficie traslapada o el menos ocupado?
+        
+    end
+    
 end
 
 function mapa_nlos = reemplazar(mapa_nlos)
