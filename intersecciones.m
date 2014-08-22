@@ -91,11 +91,15 @@ function grado_ = ordenar(grado_)
 
 end
 
+% Asignar canales a los access point
 function grado_ = asignar(grafo_, grado_, num_ap)
 
-    % conteo de canales utilizados
-    canales(4)=0;
+
+    num_chan=4;             % numero de canales disponibles
+    canales(num_chan)=0;    % conteo de canales utilizados
     
+    % Determinar que canales estan utilizando los vecinos del nodo en
+    % cuestion
     % recorrer matriz grado
     for i=1:num_ap
         % recorrer matriz grafo, analizar cada interseccion
@@ -108,28 +112,38 @@ function grado_ = asignar(grafo_, grado_, num_ap)
             end
         end
         
+        % maximo, almacena maximo espacio de traslape de superficies,
+        % se inicializa con 0
+        maximo=0;
+        % asigna el primer canal (1)
         if nnz(canales)==0
             grado_(i,4) = 1;
-            canales(1)=canales(1)+1;
-        elseif nnz(canales)==1
-            grado_(i,4) = 2;
-            canales(2)=canales(2)+1;
-        elseif nnz(canales)==2
-            grado_(i,4) = 3;
-            canales(3)=canales(3)+1;
-        elseif nnz(canales)==3
-            grado_(i,4) = 4;
-            canales(4)=canales(4)+1;
-        elseif nnz(canales)==4
-            % minimo, almacena minimo espacio de traslape de superficies,
-            % se inicializa con el maximo valor de grafico_
-            minimo=max(max(grafo_));
-            for j=1:i-1
-                % aux almacena superficie de contacto entre los 2 valores
-                % involucrados
-                aux=grafo_(grado_(i,2),grado_(j,2));
-                minimo=min(minimo, aux);
+        % asigna si hay canales libres, prioriza orden 1 a 4
+        elseif nnz(canales)>=1 && nnz(canales)<4
+            flag=0;
+            for j=1:num_chan
+                if flag==0 && canales(j)==0
+                    grado_(i,4) = j;
+                    flag=1;
+                end
             end
+        % asigna cuando no quedan canales libres
+        elseif nnz(canales)==4
+            k=1;
+            while size(find(canales==12),2)<num_chan && k<(i-1)
+                for j=k:i-1
+                    % aux almacena superficie de contacto entre los 2 valores
+                    % involucrados
+                    aux=grafo_(grado_(i,2),grado_(j,2));
+                    if aux > maximo
+                        maximo=max(maximo, aux);
+                        row_selected = j;
+                    end
+                end
+                canales(grado_(row_selected,4))=num_chan;
+                k=k+1;
+            end
+            [val, grado_(i,4)]=min(canales);
         end
         
         canales(:)=0;
@@ -139,8 +153,7 @@ function grado_ = asignar(grafo_, grado_, num_ap)
         %   si existe 4 o mas vecinos asignados, asignar ID del nodo con
         %       menor superficie traslapada o el menos ocupado?
     end
-    
-    canales
+    fprintf('ok \n');
     
 end
 
