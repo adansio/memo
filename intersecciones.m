@@ -129,19 +129,17 @@ function grado_ = asignar(grafo_, grado_, num_ap)
             end
         % asigna cuando no quedan canales libres
         elseif nnz(canales)==4
-            k=1;
-            while size(find(canales==12),2)<num_chan && k<(i-1)
-                for j=k:i-1
+            while size(find(canales==num_ap),2)<num_chan
+                for j=1:i-1
                     % aux almacena superficie de contacto entre los 2 valores
                     % involucrados
                     aux=grafo_(grado_(i,2),grado_(j,2));
                     if aux > maximo
-                        maximo=max(maximo, aux);
+                        maximo = aux;
                         row_selected = j;
                     end
                 end
-                canales(grado_(row_selected,4))=num_chan;
-                k=k+1;
+                canales(grado_(row_selected,4))=num_ap;
             end
             [val, grado_(i,4)]=min(canales);
         end
