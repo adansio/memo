@@ -30,18 +30,18 @@ function intersecciones(m_ap)
         end
     end
     
-    %mapa_NLOS=reemplazar(mapa_NLOS);
+    mapa_NLOS=reemplazar(mapa_NLOS);
     
-    %colormap('default');
-    %imagesc(mapa_LOS);
-    %colorbar
-    %hold on
+    colormap('default');
+    imagesc(mapa_LOS);
+    colorbar
+    hold on
     
-    %hImg = imagesc(mapa_NLOS); 
-    %set(hImg, 'AlphaData', 0.3)
+    hImg = imagesc(mapa_NLOS); 
+    set(hImg, 'AlphaData', 0.3)
    
     % repliega matriz triangular superior en matriz triangular inferior
-    grafo = grafo' + grafo
+    grafo = grafo' + grafo;
     fprintf('\n ');
     
     % cuenta cuantos nodos se interfieren en total
@@ -99,7 +99,7 @@ function grado_ = asignar(grafo_, grado_, num_ap)
     canales(num_chan)=0;    % conteo de canales utilizados
     
     % Determinar que canales estan utilizando los vecinos del nodo en
-    % cuestion
+    %   cuestion
     % recorrer matriz grado
     for i=1:num_ap
         % recorrer matriz grafo, analizar cada interseccion
@@ -141,9 +141,11 @@ function grado_ = asignar(grafo_, grado_, num_ap)
                         row_selected = j;
                     end                    
                 end
+                % swap
                 tmp=copy_grado(row_selected,:);
                 copy_grado(row_selected,:)=copy_grado(k,:);
                 copy_grado(k,:)=tmp;
+                % asigna valor maximo al canal de vecino directo
                 canales(copy_grado(k,4))=num_ap;
                 k=k+1;
                 maximo=0;
@@ -152,13 +154,13 @@ function grado_ = asignar(grafo_, grado_, num_ap)
         end
         
         canales(:)=0;
-        % verificar si algun vecino de i tiene ID asignado
-        %   si no existe vecino con asignacion, asignar el primero
-        %   si existen 3 o menos vecinos asignados, asignar el sgte ID
-        %   si existe 4 o mas vecinos asignados, asignar ID del nodo con
-        %       menor superficie traslapada o el menos ocupado?
+        % verificar si algun vecino de i tiene canal (ID) asignado
+        %   si no existe vecino con canal asignado, asignar el primero
+        %   si existen 3 o menos vecinos asignados, asignar el sgte canal
+        %       libre
+        %   si existen 4 o mas vecinos asignados, revisar el canal de ellos
+        %       y asignar cuarto canal mas distante
     end
-    fprintf('ok \n');
     
 end
 
