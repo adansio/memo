@@ -37,11 +37,11 @@ function intersecciones(m_ap)
     colorbar
     hold on
     
-    hImg = imagesc(mapa_NLOS); 
-    set(hImg, 'AlphaData', 0.3)
+    %hImg = imagesc(mapa_NLOS); 
+    %set(hImg, 'AlphaData', 0.3)
    
     % repliega matriz triangular superior en matriz triangular inferior
-    grafo = grafo' + grafo;
+    grafo = grafo' + grafo
     fprintf('\n ');
     
     % cuenta cuantos nodos se interfieren en total
@@ -98,13 +98,16 @@ function grado_ = asignar(grafo_, grado_, num_ap)
     num_chan=4;             % numero de canales disponibles
     canales(num_chan)=0;    % conteo de canales utilizados
     
+    %asignacion del primer nodo, canal 1
+    grado_(1,4)=1;
+    
     % Determinar que canales estan utilizando los vecinos del nodo en
     %   cuestion
     % recorrer matriz grado
-    for i=1:num_ap
+    for i=2:num_ap
         % recorrer matriz grafo, analizar cada interseccion
-        for j=1:num_ap
-            if grafo_(grado_(i,2),j)~=0 
+        for j=1:num_ap-1
+            if grafo_(grado_(i,2),grado_(j,2))~=0 
                 % si ya tiene un canal asignado
                 if grado_(find(grado_(:,2),j),4)~=0
                     canales(grado_(find(grado_(:,2),j),4)) = canales(grado_(find(grado_(:,2),j),4)) + 1;
