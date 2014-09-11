@@ -35,7 +35,7 @@ function intersecciones(m_ap)
     colormap('default');
     imagesc(mapa_LOS);
     colorbar
-    hold on
+    %hold on
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -64,6 +64,7 @@ function intersecciones(m_ap)
     
     grado = asignar(grafo, grado, size(m_ap,3));
     grado
+    save('chans.mat','grado');
     
     %dlmwrite('grafo-c.txt',grafo,'delimiter', '\t');
     

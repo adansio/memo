@@ -10,7 +10,7 @@ function SNR(m_ap)
         for i = 1:size(mapa_NLOS,1)
             for j = 1:size(mapa_NLOS,2) 
                 if  ~isnan(mapa_NLOS(i,j))
-                    mapa_LOS(i,j)=max(m_ap(i,j,grado(find(grado(:,4) ~= 1),2)));
+                    mapa_LOS(i,j)=max(m_ap(i,j,[3,8]));
                 end
             end
         end
