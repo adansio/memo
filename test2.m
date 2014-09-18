@@ -35,37 +35,38 @@ function test2
      
     % Ubicación estática de los access point
     APs = [                          %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
-        220 150 5 1;                 %   pasillo 3
+        %220 150 5 1;                 %   a -b- cpasillo 3
+        210 175 5 1;                % d
         
         %325 115 5 6;                   % a     posicion actual
         %325 200 5 6;                   % b     alternados
         %325 150 5 6;                   % c     al centro
-        325 115 5 6;                   % d      alternados - inverso
+        310 115 5 6;                   % d      alternados - inverso
         
         %430 115 5 11;                  % a
         %430 115 5 11;                  % b
         %430 150 5 11;                  % c
-        430 200 5 11;                  % d
+        430 175 5 11;                  % d
         
         %535 115 5 11;                  % a
         %535 200 5 11;                  % b
         %535 150 5 11;                  % c
-        535 115 5 11;                  % d
+        530 115 5 11;                  % d
         
         %640 115 5 6;                  % a
         %640 115 5 6;                  % b
         %640 150 5 11;                 % c
-        640 200 5 6;                  % d
+        640 175 5 6;                  % d
         
         800 110 5 11;
         
         %   pasillo 2
-        100 300 5 1;
-        215 300 5 1;
-        365 300 6 6;
-        495 300 6 11;
-        630 300 6 1;
-        800 250 5 6;
+        95 310 5 1;
+        210 280 5 1;
+        350 280 6 6;
+        475 280 6 11;
+        605 280 6 1;
+        780 235 5 6;
         %   pasillo 1
         %740 565 5 1;
         %560 565 5 6;
@@ -115,7 +116,7 @@ function test2
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap-d.mat','m_ap');
+    save('m_ap-C2-d.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
