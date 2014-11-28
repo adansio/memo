@@ -3,38 +3,78 @@
 % Determinar las intersecciones entre access points
 function intersecciones(m_ap)
 
-    mapa_NLOS = imread('edifc.bmp');
+    mapa_NLOS = imread('maps/CC_U_NIVEL_2.bmp');
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
     mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));      
+    % array para determinar ap por piso en el que se encuentra, el orden
+    % depende de como se agregaron inicialmente en test*
+    pisos=[1,1,1,2,2,2,3,3,3];
 
     for i = 1:size(mapa_NLOS,1)
         for j = 1:size(mapa_NLOS,2) 
-            if  isnan(mapa_NLOS(i,j))
-            else
+            if  ~isnan(mapa_NLOS(i,j))
                 mapa_LOS(i,j)=max(m_ap(i,j,:));
             end
         end
     end
 
     grafo(size(m_ap,3),size(m_ap,3))=0;
-    for i=1:(size(m_ap,3) - 1)
-        [row1,col1] = find(isfinite(m_ap(:,:,i)));
-        for j=i+1:size(m_ap,3)
-            [row2,col2] = find(isfinite(m_ap(:,:,j)));
-            % si existe interseccion o traslapes de coberturas, entonces
-            % se establece enlaces entre nodos
-            aux = intersect([row1,col1],[row2,col2],'rows');
-            if  ~isempty(aux)
-                grafo(i,j)=size(aux,1);
+    % en caso de existir solo un piso
+    if size(pisos,2)==0
+        for i=1:(size(m_ap,3) - 1)
+            [row1,col1] = find(isfinite(m_ap(:,:,i)));
+            for j=i+1:size(m_ap,3)
+                [row2,col2] = find(isfinite(m_ap(:,:,j)));
+                % si existe interseccion o traslapes de coberturas, entonces
+                % se establece enlaces entre nodos
+                aux = intersect([row1,col1],[row2,col2],'rows');
+                % se omite interseccion si es menor a 1000 px2
+                if  ~isempty(aux) && size(aux,1)>1000
+                    grafo(i,j)=size(aux,1);
+                end
             end
         end
+    else
+        for i=1:(size(m_ap,3) - 1)
+            [row1,col1] = find(isfinite(m_ap(:,:,i)));
+            for j=i+1:size(m_ap,3)
+                % analisis si se encuentran en el mismo piso
+                if pisos(i)==pisos(j)
+                    [row2,col2] = find(isfinite(m_ap(:,:,j)));
+                    % si existe interseccion o traslapes de coberturas, entonces
+                    % se establece enlaces entre nodos
+                    aux = intersect([row1,col1],[row2,col2],'rows');
+                    % se omite interseccion si es menor a 1000 px2
+                    if  ~isempty(aux) && size(aux,1)>1000
+                        grafo(i,j)=size(aux,1);
+                    end
+                    row2=[];
+                    col2=[];
+                else 
+                    inter = pisos(j)-pisos(i);
+                    m_ap_aux = bajar_potencia(m_ap(:,:,j),inter);
+                    [row2,col2] = find(isfinite(m_ap_aux(:,:)));
+                    
+                    aux = intersect([row1,col1],[row2,col2],'rows');
+                    % se omite interseccion si es menor a 1000 px2
+                    if  ~isempty(aux) && size(aux,1)>7000
+                        grafo(i,j)=size(aux,1);
+                    end
+                    row2=[];
+                    col2=[];
+                end
+            end
+            row1=[];
+            col1=[];
+        end
     end
+        
     
-    mapa_NLOS=reemplazar(mapa_NLOS);
+    %mapa_NLOS=reemplazar(mapa_NLOS);
     
-    colormap('default');
-    imagesc(mapa_LOS);
-    colorbar
+    %colormap('default');
+    %imagesc(mapa_LOS);
+    %colorbar
     %hold on
     
     %hImg = imagesc(mapa_NLOS); 
@@ -64,7 +104,7 @@ function intersecciones(m_ap)
     
     grado = asignar(grafo, grado, size(m_ap,3));
     grado
-    save('chans.mat','grado');
+    %save('chans.mat','grado');
     
     %dlmwrite('grafo-c.txt',grafo,'delimiter', '\t');
     
@@ -183,4 +223,17 @@ function mtr = llenar(mtr, dim1, dim2)
     
     mtr(1:dim1,1:dim2)=-90;
 
+end
+
+function m_ap_aux = bajar_potencia(m_ap_aux,inter)
+    
+    m_ap_aux=m_ap_aux(:,:) - 12*inter;
+    for i=1:size(m_ap_aux,1)
+        for j=1:size(m_ap_aux,2)
+            if m_ap_aux(i,j)<-75
+                m_ap_aux(i,j)=nan;
+            end
+        end
+    end
+    
 end

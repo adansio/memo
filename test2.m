@@ -24,7 +24,7 @@ function test2
             %  ch  channel
     
     % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
-    mapa_NLOS = imread('edifc.bmp');
+    mapa_NLOS = imread('maps/edifc.bmp');
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
@@ -34,48 +34,52 @@ function test2
     UPr = -85;                               
      
     % Ubicación estática de los access point
-    APs = [                          %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
-        %220 150 5 1;                 %   a -b- cpasillo 3
-        210 175 5 1;                % d
+    APs = [                           %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
+        210 160 9 1;                 %   a -b- cpasillo 3
+        %210 175 5 1;                 % d
         
         %325 115 5 6;                   % a     posicion actual
         %325 200 5 6;                   % b     alternados
         %325 150 5 6;                   % c     al centro
-        310 115 5 6;                   % d      alternados - inverso
+        %310 115 5 6;                   % d      alternados - inverso
+        330 145 9 6;                   % e      4 aps
         
         %430 115 5 11;                  % a
         %430 115 5 11;                  % b
         %430 150 5 11;                  % c
-        430 175 5 11;                  % d
+        %430 175 5 11;                  % d
+        445 145 9 11;                  % e
         
         %535 115 5 11;                  % a
         %535 200 5 11;                  % b
         %535 150 5 11;                  % c
-        530 115 5 11;                  % d
+        530 115 9 11;                  % d
         
         %640 115 5 6;                  % a
         %640 115 5 6;                  % b
         %640 150 5 11;                 % c
-        640 175 5 6;                  % d
+        %640 175 5 6;                  % d
+        580 145 9 6;
         
-        800 110 5 11;
+        770 95 9 11;
         
         %   pasillo 2
-        95 310 5 1;
-        210 280 5 1;
-        350 280 6 6;
-        475 280 6 11;
-        605 280 6 1;
-        780 235 5 6;
+        97 300 10 1;
+        210 280 10 1;
+        350 280 10 6;
+        475 280 10 11;
+        605 280 10 1;
+        780 235 10 6;
         %   pasillo 1
-        %740 565 5 1;
-        %560 565 5 6;
-        %430 565 8 11;
-        %260 580 5 1;               % 3 dBm + 2 dBi
-        %125 535 8 1;               % 6 dBm + 3 dBi
+        %705 540 6 1;
+        %520 540 9 6;
+        %405 540 9 11;
+        %245 555 5 1;               
+        %118 512 5 1;              
         %hall
-        %1020 430 24 1;             % 21 dBm + 3 dBi
-        %1020 285 24 6;             % 21 dBm + 3 dBi
+        %975 273 15 1;             % 21 dBm + 3 dBi
+        %975 413 15 6;             % 21 dBm + 3 dBi
+        %900 570 12 1;
         ];     
     
     % llena matrices tridimencional a crear con NaN
@@ -101,14 +105,14 @@ function test2
     mapa_NLOS=reemplazar(mapa_NLOS);
     
 
-    %for i = 1:size(mapa_NLOS,1)
-    %    for j = 1:size(mapa_NLOS,2) 
-    %        if  isnan(mapa_NLOS(i,j))
-    %        else
-    %            mapa_LOS(i,j)=max(m_ap(i,j,:));
-    %        end
-    %    end
-    %end
+    for i = 1:size(mapa_NLOS,1)
+        for j = 1:size(mapa_NLOS,2) 
+            if  isnan(mapa_NLOS(i,j))
+            else
+                mapa_LOS(i,j)=max(m_ap(i,j,:));
+            end
+        end
+    end
     
     % Desplegar imagen
     %colormap('default');
@@ -116,7 +120,7 @@ function test2
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap-C2-d.mat','m_ap');
+    save('m_ap_C2_actual.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -194,7 +198,7 @@ function [mtr, vx, rm1] = right(nlos, mtr, vx, vy, px, py, Pt, UPr)
  
 	vx=vx+1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)  
-	    Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
+	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
         if Prx > UPr
@@ -214,7 +218,7 @@ function [mtr, vy, rm2] = down(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vy=vy+1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
+	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -234,7 +238,7 @@ function [mtr, vx, rm3] = left(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vx=vx-1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-        Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
+        Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
         atenuacion = linea(nlos, px, py, vx, vy);
         Prx = Prx - atenuacion;
         if Prx > UPr 
@@ -254,7 +258,7 @@ function [mtr, vy, rm4] = up(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vy=vy-1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.125/(4*pi*sqrt((vx-px)^2+(vy-py)^2)));
+	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -273,11 +277,11 @@ function atenuacion = atenua(atenuacion, tipo)
 
     switch tipo
         case {0,1,2}      % Pared de concreto gruesa
-            atenuacion = atenuacion + 12;
+            atenuacion = atenuacion + 9.2;
         case 32     % Pared de concreto media
-            atenuacion = atenuacion + 6;
+            atenuacion = atenuacion + 5;
         case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2;
+            atenuacion = atenuacion + 2.2;
         otherwise
             fprintf('%d  ',tipo);
             
