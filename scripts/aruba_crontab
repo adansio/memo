@@ -1,0 +1,31 @@
+## mover a /etc/crontab
+
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=adan
+HOME=/
+
+# For details see man 4 crontabs
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name command to be executed
+
+######### RELOAD ACCESS POINT ARUBA CADA LUNES 7 AM ###############
+# biblioteca 
+00 23 * * mon adan /home/adan/scripts/aruba_reboot.sh 10.114.3.2
+# edificio C salas
+05 23 * * mon adan /home/adan/scripts/aruba_reboot.sh 10.114.3.34
+# edificio C hall
+#13 11 * * mon adan /home/adan/scripts/aruba_reboot.sh 10.114.2.70
+# icom-ind
+10 23 * * mon adan /home/adan/scripts/aruba_reboot.sh 10.114.3.66
+# edificio A
+15 23 * * mon adan /home/adan/scripts/aruba_reboot.sh 10.114.3.98
+# elo
+20 23 * * mon adan /home/adan/scripts/aruba_reboot.sh 10.114.3.130
