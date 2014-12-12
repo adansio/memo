@@ -24,7 +24,7 @@ function test_matta
             %  ch  channel
     
     % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
-    mapa_NLOS = imread('maps/matta_p1.bmp');
+    mapa_NLOS = imread('maps/matta_p2.bmp');
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
@@ -35,11 +35,19 @@ function test_matta
      
     % Ubicación estática de los access point
     APs = [                           %   actual ptos con aps, y sus características x y Ptx[dBm] ch 
-            260 34 27 1;         % piso 1, atras de guardia
-            %155 77 9 1;         % piso 2, sala reunion
-            %290 266 9 1;        % piso 2, ana morales
-            %60 89 9 1;          % piso 3, sala
-            %114 60 9 1;         % piso 3, pasillo
+            %288 36 27 1;        % piso 1, atras de guardia
+            %123 17 18 1;        % piso 1, sala
+            %156 69 30 1;         % piso 2, sala reunion
+            %286 260 3 1;        % piso 2, ana morales
+            %90 100 30 1;          % piso 3, sala
+            %140 64 24 1;         % piso 3, pasillo
+            
+            %140 17 9 1;        % piso 1, sala reunion norte
+            305 48 12 1;        % piso 2, oficinas 
+            290 260 15 1;       % piso 2, oficina sur
+            156 69 12 1;         % piso 2, sala reunion
+            %90 100 15 1;        % piso 3, sala
+            
         ];     
     
     % llena matrices tridimencional a crear con NaN
@@ -80,7 +88,7 @@ function test_matta
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap_matta1.mat','m_ap');
+    save('m_ap_matta2_1v2.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
