@@ -24,7 +24,7 @@ function test_U
             %  ch  channel
     
     % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
-    mapa_NLOS = imread('maps/CC_U_NIVEL_3.bmp');
+    mapa_NLOS = imread('maps/edifu2.bmp');
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
@@ -36,7 +36,7 @@ function test_U
     % Ubicación estática de los access point
     APs = [                           %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
         %110 135 9 1;                %piso 0
-        %190 95 9 1;                 %piso 1 alta dda
+        %125 80 9 1;                 %piso 1 alta dda
         %295 75 6 1;                 % prestamo - entrada
         %420 150 9 1;                % norte
         %225 155 9 1;                % piso 2 sur
@@ -60,17 +60,29 @@ function test_U
         %87 5 18 1;                  % piso 4   
             
         % 5GHz
-        %110 135 9 1;                % piso 0
-        %190 95 9 1;                 % piso 1 alta dda
-        %295 75 6 1;                 % prestamo - entrada
-        %420 150 9 1;                % norte
-        %225 155 9 1;                % piso 2 sur
-        %400 165 9 1;                % estantes
-        %515 155 9 1;                % norte
-        %330 50 9 1;                 % piso 3 literatura
-        %375 167 6 1;                % estantes
-        %480 145 9 1;                % norte
-        %87 5 18 1;                  %piso 4
+        %110 135 18 1;                %piso 0
+        %125 80 15 1;                 % piso 1 alta dda
+        %295 75 12 1;                 % prestamo - entrada
+        %420 150 15 1;                % norte
+        %225 155 15 1;                % piso 2 sur
+        %400 165 15 1;                % estantes
+        %515 155 15 1;                % norte
+        %330 50 15 1;                 % piso 3 literatura
+        %375 167 12 1;                % estantes
+        %480 145 15 1;                % norte
+        %87 5 21 1;                  %piso 4
+        
+        % proyecciones en piso2
+        82 85 18 1;             % piso 1 alta dda
+        245 80 15 1;            % prestamo - entrada
+        440 145 15 1;           % norte
+        225 155 15 1;           % piso 2 sur
+        400 165 15 1;           % estantes
+        515 155 15 1;           % norte
+        330 50 15 1;            % piso 3 literatura
+        398 166 12 1;           % estantes
+        485 145 15 1;           % norte
+        215 10 21 1;            %piso 4
         
         ];     
     
@@ -112,7 +124,7 @@ function test_U
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap_U3.mat','m_ap');
+    save('m_ap_U2___5g.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -190,7 +202,8 @@ function [mtr, vx, rm1] = right(nlos, mtr, vx, vy, px, py, Pt, UPr)
  
 	vx=vx+1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)  
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+	    %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+        Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
         if Prx > UPr
@@ -212,7 +225,8 @@ function [mtr, vy, rm2] = down(nlos, mtr, vx, vy, px, py, Pt, UPr)
     % Prx = Pt + 20 * log10(0.057*conversion/(4*pi*sqrt((vx-px)^2+(vy-py)^2))) - 10[path_loss]
     vy=vy+1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+	    %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+        Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -232,7 +246,8 @@ function [mtr, vx, rm3] = left(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vx=vx-1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-        Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+        %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+        Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
         atenuacion = linea(nlos, px, py, vx, vy);
         Prx = Prx - atenuacion;
         if Prx > UPr 
@@ -252,7 +267,8 @@ function [mtr, vy, rm4] = up(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vy=vy-1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+	    %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+        Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -271,11 +287,11 @@ function atenuacion = atenua(atenuacion, tipo)
 
     switch tipo
         case {0,1,2}      % Pared de concreto gruesa
-            atenuacion = atenuacion + 9;
+            atenuacion = atenuacion + 10;
         case 32     % Pared de concreto media
             atenuacion = atenuacion + 4.5;
-        case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2;
+        case {46,47,48,49}     % tabiqueria
+            atenuacion = atenuacion + 2.5;
         case 80         % estanteria
             atenuacion = atenuacion + 5;    
         otherwise

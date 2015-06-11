@@ -12,7 +12,7 @@
 %       Loss internal 5 GHz =   3.0 dB
 %
 
-function test_matta
+function test_A
 
     global mapa_LOS mapa_NLOS apx apy vary varx Ptx UPr ch
             %  apx posicion del ap en eje x
@@ -24,7 +24,7 @@ function test_matta
             %  ch  channel
     
     % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
-    mapa_NLOS = imread('maps/matta_p2.bmp');
+    mapa_NLOS = imread('maps/edifa1.bmp');
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
@@ -34,19 +34,55 @@ function test_matta
     UPr = -85;                               
      
     % Ubicación estática de los access point
-    APs = [                           %   actual ptos con aps, y sus características x y Ptx[dBm] ch 
-            %288 36 27 1;        % piso 1, atras de guardia
-            %156 69 30 1;         % piso 2, sala reunion
-            %286 260 3 1;        % piso 2, ana morales
-            %90 100 30 1;          % piso 3, sala
-            %140 64 24 1;         % piso 3, pasillo
-            
-            140 50 9 1;         % piso 1, sala reunion norte
-            305 48 12 1;        % piso 2, oficinas profes
-            290 260 12 1;       % piso 2, oficina ana morales
-            156 69 12 1;        % piso 2, sala reunion
-            90 100 15 1;        % piso 3, sala
-            
+    APs = [                           %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
+        %   Piso1
+        %95 110 18 1;    % salon honor
+        %122 210 18 11;  % auditorio ppal
+        %240 208 15 11;  % salas 1-2
+        %522 95 21 1;    % boleteria
+        748 212 15 1;   % radio
+        
+        %   Piso2
+        %717 158 18 6;   % VREA -> mantener potencia por lo menos en 18 dBm
+        
+        %   Piso3
+        %75 243 12 2;    % VRA
+        %130 200 15 8;   % rectoria
+        %640 235 12 11;  % DGIP -> sacar ap al pasillo
+        %747 10 15 1;    % patio
+        
+        %185 177 12 12; % proyecciones piso 4 en 3
+        %495 216 15 2;
+        %643 240 12 6;
+        %756 238 15 1;
+        %165 160 9 3; % proyeccion piso 5 en 3
+        %440 235 12 12; 
+        %45 195 21 6;   % proyeccion piso 6 en 3
+        %320 230 12 1; 
+        %760 120 18 1;
+        
+        
+        %   Piso4
+        %174 227 12 12;  % norte
+        %490 230 15 2;   % salon vip
+        %675 280 12 6;   % sala consejo academico
+        %730 275 15 1;   % dgc
+        
+        %135 209 9 3;    % proyecciones piso 5 en 4
+        %68 201 9 11;
+        %430 270 12 12;
+        %45 256 12 6;    % proyecciones piso 6 en 4
+        %320 255 12 1;
+        %750 205 12 13;
+        
+        %   Piso5
+        %123 63 12 3;      % ofi reunion
+        %420 110 15 12;   % dir infraestructura
+        
+        %   Piso6
+        %45 100 21 6;    % di
+        %320 120 12 1;   % aexa
+        %685 45 18 13;   % ucp
         ];     
     
     % llena matrices tridimencional a crear con NaN
@@ -87,7 +123,7 @@ function test_matta
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap_matta123.mat','m_ap');
+    save('m_ap_A1_radio.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -163,9 +199,12 @@ end
 % avanzar a la derecha
 function [mtr, vx, rm1] = right(nlos, mtr, vx, vy, px, py, Pt, UPr)
  
+    % ITU path loss Pr = 20 log(f) + N log(d) + Lf(n) - 28
+    
 	vx=vx+1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)  
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+	    %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 13;
+        Prx = Pt + 2 - (39.6 + 30*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
         if Prx > UPr
@@ -187,7 +226,8 @@ function [mtr, vy, rm2] = down(nlos, mtr, vx, vy, px, py, Pt, UPr)
     % Prx = Pt + 20 * log10(0.057*conversion/(4*pi*sqrt((vx-px)^2+(vy-py)^2))) - 10[path_loss]
     vy=vy+1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+	    %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 13;
+        Prx = Pt + 2 - (39.6 + 30*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -207,7 +247,8 @@ function [mtr, vx, rm3] = left(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vx=vx-1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-        Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+        %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 13;
+        Prx = Pt + 2 - (39.6 + 30*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
         atenuacion = linea(nlos, px, py, vx, vy);
         Prx = Prx - atenuacion;
         if Prx > UPr 
@@ -227,7 +268,8 @@ function [mtr, vy, rm4] = up(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vy=vy-1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+	    %Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 13;
+        Prx = Pt + 2 - (39.6 + 30*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -246,13 +288,13 @@ function atenuacion = atenua(atenuacion, tipo)
 
     switch tipo
         case {0,1,2}      % Pared de concreto gruesa
-            atenuacion = atenuacion + 9;
+            atenuacion = atenuacion + 12.5;
         case 32     % Pared de concreto media
-            atenuacion = atenuacion + 4.5;
+            atenuacion = atenuacion + 8;
         case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2;
+            atenuacion = atenuacion + 4;
         case 80         % estanteria
-            atenuacion = atenuacion + 5;    
+            atenuacion = atenuacion + 2;    
         otherwise
             fprintf('%d  ',tipo);
             

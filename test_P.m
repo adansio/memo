@@ -12,7 +12,7 @@
 %       Loss internal 5 GHz =   3.0 dB
 %
 
-function test_matta
+function test_P
 
     global mapa_LOS mapa_NLOS apx apy vary varx Ptx UPr ch
             %  apx posicion del ap en eje x
@@ -24,7 +24,7 @@ function test_matta
             %  ch  channel
     
     % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
-    mapa_NLOS = imread('maps/matta_p2.bmp');
+    mapa_NLOS = imread('maps/edifp0.bmp');
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
@@ -34,19 +34,121 @@ function test_matta
     UPr = -85;                               
      
     % Ubicación estática de los access point
-    APs = [                           %   actual ptos con aps, y sus características x y Ptx[dBm] ch 
-            %288 36 27 1;        % piso 1, atras de guardia
-            %156 69 30 1;         % piso 2, sala reunion
-            %286 260 3 1;        % piso 2, ana morales
-            %90 100 30 1;          % piso 3, sala
-            %140 64 24 1;         % piso 3, pasillo
-            
-            140 50 9 1;         % piso 1, sala reunion norte
-            305 48 12 1;        % piso 2, oficinas profes
-            290 260 12 1;       % piso 2, oficina ana morales
-            156 69 12 1;        % piso 2, sala reunion
-            90 100 15 1;        % piso 3, sala
-            
+    APs = [                           %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
+        % Piso0
+		340 200 15 11;	% lab_consultas
+		635 140 12 11;	% lab_jgodoy
+		625 285 9 6;      % sala 011 
+ 		
+		% Piso 1
+        %50 270 9 1;     % sala estudio
+        %150 110 9 1;    % opc-a sala 105
+        %350 130 10 1;   % sala 108
+        %480 140 9 1;    % sala 110
+        %620 135 21 1;   % sala 114 -> subir potencia a 21 dBm
+            %proyecciones
+        %150 280 14 1;    % 201 sobre 101
+        %45 75 5 1;       % 206 sobre 103
+        %350 130 12 1;    % 212 sobre 108
+        %480 140 9 1;     % 214 sobre 110
+        %695 60 15 1;     % 223 sobre 118
+            %proyecciones 
+        %140 275 9 1;    % 301 sobre 101
+        %25 335 13 1;    % 302 sobre espacio libre
+        %115 60 15 1;    % 307 sobre 107
+        %475 140 9 1;    % 313 sobre 110
+        %475 290 10 1;   % 314 sobre patio
+        %340 90 12 1;    % 316 sobre 112
+        %695 85 15 1;    % pasillo
+            %proyecciones
+        %80  105 9 1;    % comedor
+        %325 155 12 1;   % 405 sobre 108
+        %480 145 9 1;    % 407 sobre 110
+        %658 88 12 1;    % pasillo
+        
+		% Piso 2
+        %140 270 15 1;   % sala 201
+        %45 195 10 1;    % ---espacio libre
+        %65 70 12 1;      % sala 206
+        %345 135 12 1;   % sala 212
+        %485 140 9 1;    % sala 214
+        %700 60 15 1;    % sala 223
+            %proyecciones
+        %140 270 9 1;   % 301 sobre 201
+        %30 335 15 1;    % 302 sobre 202
+        %87 100 12 1;    % 307 sobre 207
+        %480 140 9 1;    % 313 sobre 214
+        %470 295 12 1;   % 314 sobre 217
+        %335 85 8 1;    % 316 sobre 215
+        %666 88 12 1;    % pasillo sur p3 sobre pasillo sur p2
+            %proyecciones
+        %65 95 10 1;   % comedor
+        %335 150 12 1;   % sala 405
+        %480 140 9 1;    % sala 407
+        %666 88 12 1;   % sala 411
+            %proyecciones
+        %45 265 9 1;     % sala 102 bajo 202
+        %125 112 12 1;   % sala 105 bajo 207
+        %345 135 10 1;   % sala 108 bajo 212
+        %480 140 9 1;    % sala 110 bajo 214
+        %630 140 18 1;   % sala 114 bajo 219
+            %proyecciones
+        %130 195 9 1;    % impresiones bajo espacio libre piso2
+        %390 130 9 1;    % lab jgodoy
+        %444 295 6 1;    % p011 
+ 
+		% Piso 3
+		%140 275 9 1;	 % sala 301
+        %25 335 15 1;   % sala 302
+        %85 105 12 1;   % pasillo 305-308
+        %475 140 12 1;   % sala 313
+        %475 290 12 1;  % sala 314
+        %340 90 12 1;   % sala 316
+        %660 87 12 1;   % pasillo sala 319 322
+            %proyecciones
+        %115 140 10 1;   %comedor sobre 308
+        %335 140 12 1;   %405 sobre 311
+        %480 135 9 1;    %407 sobre 313
+        %625 140 15 1;   %411 sobre 318
+        
+        % Piso 4
+        %115 140 10 1;   % comedor
+        %335 140 12 1;  % sala 405
+        %480 135 9 1;   % sala 407
+        %658 82 12 1;    % sala 411
+        
+        %situación actual
+        %250 185 10 11;  % lab_consultas
+		%600 165 12 11;	% lab_jgodoy
+		%650 285 9 6;    % sala 011 
+        
+        %50 270 10 1;    % sala estudio
+        %50 105 10 6;    % sala 103
+        %320 155 10 6;   % sala 108
+        %480 140 10 1;   % sala 110
+        %620 135 10 6;   % sala 114
+        
+        %140 270 10 6;   % sala 201
+        %85 220 10 11;   % pasillo
+        %50 50 10 1;     % sala 206
+        %330 150 10 1;   % sala 212
+        %485 140 10 6;   % sala 214
+        %540 170 10 11;  % pasillo
+        %700 60 10 1;    % sala 223
+        
+        %140 275 10 1;   % sala 301
+        %45 350 10 1;   % sala 302
+        %85 130 10 1;   % pasillo
+        %475 140 10 1;   % sala 313
+        %535 180 10 1;  % pasillo
+        %325 85 10 1;   % sala 316
+        %695 140 10 1;   % sala 318
+        
+        %130 175 10 1;   % comedor
+        %330 150 12 1;   % sala 405
+        %480 135 10 1;   % sala 407
+        %625 140 10 1;   % sala 411
+        
         ];     
     
     % llena matrices tridimencional a crear con NaN
@@ -87,7 +189,7 @@ function test_matta
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap_matta123.mat','m_ap');
+    save('m_ap_P0.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -165,7 +267,12 @@ function [mtr, vx, rm1] = right(nlos, mtr, vx, vy, px, py, Pt, UPr)
  
 	vx=vx+1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)  
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
+	    % friis
+		% Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+		% ITU
+		% Prx = Pt + 2 - 39.6 - ( 28 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
+        % modelo propio
+        Prx = Pt + 2 - (41.5 + 32.8 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
         if Prx > UPr
@@ -183,12 +290,15 @@ end
 %avanzar hacia abajo
 function [mtr, vy, rm2] = down(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
-    % Prx = Pt + 20 * log10(0.125*conversion/(4*pi*sqrt((vx-px)^2+(vy-py)^2))) - 10[path_loss]
-    % Prx = Pt + 20 * log10(0.057*conversion/(4*pi*sqrt((vx-px)^2+(vy-py)^2))) - 10[path_loss]
     vy=vy+1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
-	    atenuacion = linea(nlos, px, py, vx, vy);
+	    % friis
+		% Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+	    % ITU
+		%Prx = Pt + 2 - 39.6 - ( 28 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
+        % modelo propio
+        Prx = Pt + 2 - (41.5 + 32.8 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
+		atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
 	        mtr(vy,vx) = Prx;
@@ -207,8 +317,13 @@ function [mtr, vx, rm3] = left(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vx=vx-1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-        Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
-        atenuacion = linea(nlos, px, py, vx, vy);
+        % friis
+		% Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+        % ITU
+		%Prx = Pt + 2 - 39.6 - ( 28 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
+        % modelo propio
+        Prx = Pt + 2 - (41.5 + 32.8 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
+		atenuacion = linea(nlos, px, py, vx, vy);
         Prx = Prx - atenuacion;
         if Prx > UPr 
             mtr(vy,vx) = Prx;
@@ -227,8 +342,13 @@ function [mtr, vy, rm4] = up(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vy=vy-1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 12;
-	    atenuacion = linea(nlos, px, py, vx, vy);
+		% friis
+	    % Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+	    % ITU
+		% Prx = Pt + 2 - 39.6 - ( 28 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
+        % modelo propio
+        Prx = Pt + 2 - (41.5 + 32.8 * log10((sqrt((vx-px)^2+(vy-py)^2))/10));
+		atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
 	        mtr(vy,vx) = Prx;
@@ -246,13 +366,11 @@ function atenuacion = atenua(atenuacion, tipo)
 
     switch tipo
         case {0,1,2}      % Pared de concreto gruesa
-            atenuacion = atenuacion + 9;
-        case 32     % Pared de concreto media
-            atenuacion = atenuacion + 4.5;
-        case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2;
-        case 80         % estanteria
-            atenuacion = atenuacion + 5;    
+            atenuacion = atenuacion + 11;
+        case 32     % Pared vidrio
+            atenuacion = atenuacion + 8.7;
+        case {46,47,48,49}     % tabiqueria
+            atenuacion = atenuacion + 3.4;
         otherwise
             fprintf('%d  ',tipo);
             
@@ -281,7 +399,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
             %   si el punto de analisis esta mas abajo que el ap
             
             while aux_y < ptoy
-                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                     tipo = NLOS(aux_y, aux_x);
                     atenuacion = atenua(atenuacion, tipo);
                     flag = 1;
@@ -298,7 +416,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
         else
             %   si el punto de analisis esta mas arriba que el ap
             while aux_y > ptoy
-                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                     tipo = NLOS(aux_y, aux_x);
                     atenuacion = atenua(atenuacion, tipo);
                     flag = 1;
@@ -320,7 +438,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
         if ptox > apx
             %   si el punto de analisis esta a la derecha del ap
             while aux_x < ptox
-                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                     tipo = NLOS(aux_y, aux_x);
                     atenuacion = atenua(atenuacion, tipo);
                     flag = 1;
@@ -337,7 +455,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
         else
             %    si el punto de analisis esta a la izquierda del ap
             while aux_x > ptox
-                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                     tipo = NLOS(aux_y, aux_x);
                     atenuacion = atenua(atenuacion, tipo);
                     flag = 1;
@@ -369,7 +487,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x>=ptox || aux_y>=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -383,7 +501,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_y=aux_y+1;
                     add=add+frac;
                     if add>=ent && aux_x<ptox && aux_y<ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
@@ -409,7 +527,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x<=ptox || aux_y<=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -423,7 +541,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_y=aux_y-1;
                     add=add+frac;
                     if add>=ent && aux_x>ptox && aux_y>ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
@@ -458,7 +576,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x<=ptox || aux_y>=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -472,7 +590,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_y=aux_y+1;
                     add=add+frac;
                     if add>=ent && aux_x>ptox && aux_y<ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
@@ -498,7 +616,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x>=ptox || aux_y<=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -512,7 +630,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_y=aux_y-1;
                     add=add+frac;
                     if add>=ent && aux_x<ptox && aux_y>ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
@@ -548,7 +666,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x>=ptox && aux_y>=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -562,7 +680,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_x=aux_x+1;
                     add=add+frac;
                     if add>=ent && aux_x<ptox && aux_y<ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
@@ -588,7 +706,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x<=ptox && aux_y<=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -602,7 +720,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_x=aux_x-1;
                     add=add+frac;
                     if add>=ent && aux_x>ptox && aux_y>ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
@@ -635,7 +753,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x<=ptox && aux_y>=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -649,7 +767,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_x=aux_x-1;
                     add=add+frac;
                     if add>=ent && aux_x>ptox && aux_y<ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;
@@ -673,7 +791,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     if aux_x>=ptox && aux_y<=ptoy
                         return
                     end
-                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                    if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                         tipo = NLOS(aux_y, aux_x);
                         atenuacion = atenua(atenuacion, tipo);
                         flag = 1;
@@ -687,7 +805,7 @@ function atenuacion = linea(NLOS, apx, apy, ptox, ptoy)
                     aux_x=aux_x+1;
                     add=add+frac;
                     if add>=ent && aux_x<ptox && aux_y>ptoy
-                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) || NLOS(aux_y,aux_x) == 80)
+                        if flag == 0 && ( NLOS(aux_y,aux_x) < 5 || (30 < NLOS(aux_y,aux_x) &&  NLOS(aux_y,aux_x) < 35) || (45 < NLOS(aux_y,aux_x) && NLOS(aux_y,aux_x) < 50) )
                             tipo = NLOS(aux_y, aux_x);
                             atenuacion = atenua(atenuacion, tipo);
                             flag = 1;

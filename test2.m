@@ -24,62 +24,78 @@ function test2
             %  ch  channel
     
     % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
-    mapa_NLOS = imread('maps/edifc.bmp');
+    mapa_NLOS = imread('maps/edifc2b.bmp');
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
     mapa_LOS = llenar(mapa_LOS,size(mapa_NLOS,1), size(mapa_NLOS,2));      
     
     % Umbral de potencia de recepción
-    UPr = -85;                               
+    UPr = -80;                               
      
     % Ubicación estática de los access point
     APs = [                           %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
-        210 160 9 1;                 %   a -b- cpasillo 3
+        %210 160 9 1;                 %   a -b- c pasillo 3
         %210 175 5 1;                 % d
         
         %325 115 5 6;                   % a     posicion actual
         %325 200 5 6;                   % b     alternados
         %325 150 5 6;                   % c     al centro
-        %310 115 5 6;                   % d      alternados - inverso
-        330 145 9 6;                   % e      4 aps
+        %310 115 5 6;                   % d     alternados - inverso
+        %330 145 9 6;                   % e     4 aps
         
         %430 115 5 11;                  % a
         %430 115 5 11;                  % b
         %430 150 5 11;                  % c
         %430 175 5 11;                  % d
-        445 145 9 11;                  % e
+        %445 145 9 11;                  % e
         
         %535 115 5 11;                  % a
         %535 200 5 11;                  % b
         %535 150 5 11;                  % c
-        530 115 9 11;                  % d
+        %530 115 9 11;                  % d
         
         %640 115 5 6;                  % a
         %640 115 5 6;                  % b
         %640 150 5 11;                 % c
         %640 175 5 6;                  % d
-        580 145 9 6;
+        %580 145 9 6;
         
-        770 95 9 11;
+        %770 95 9 11;
         
-        %   pasillo 2
-        97 300 10 1;
-        210 280 10 1;
-        350 280 10 6;
-        475 280 10 11;
-        605 280 10 1;
-        780 235 10 6;
-        %   pasillo 1
-        %705 540 6 1;
-        %520 540 9 6;
-        %405 540 9 11;
-        %245 555 5 1;               
-        %118 512 5 1;              
-        %hall
-        %975 273 15 1;             % 21 dBm + 3 dBi
-        %975 413 15 6;             % 21 dBm + 3 dBi
-        %900 570 12 1;
+        %       pasillo 2
+        % 97 300 10 1;
+        % 210 280 10 1;
+        % 350 280 10 6;
+        % 475 280 10 11;
+        % 605 280 10 1;
+        % 780 235 10 6;
+        %       pasillo 1
+        % 705 540 6 1;
+        % 520 540 9 6;
+        % 405 540 9 11;
+        % 245 555 5 1;               
+        % 118 512 5 1;              
+        %       hall
+        % 975 273 15 1;             % 21 dBm + 3 dBi
+        % 975 413 15 6;             % 21 dBm + 3 dBi
+        % 900 570 12 1;
+        
+        %       Piso 3      
+        % 666 495 9 1;                % cmat
+        % 305 497 9 1;                % ociv
+        
+        % 1155 495 9 1;               % profes sec-mec
+        % 1540 265 9 1;               % dpqba 
+        
+        %       Piso 2 talleres
+        %585 480 15 1;               % pancho mena
+        %653 255 12 1;               % dpqba
+        %265 377 9 1;                % taller metal
+        %395 225 9 1;                % taller mec
+        
+        %290 450 9 1;                % proyeccion profes sec-mec en piso2
+        %655 260 9 1;                % proyeccion profes dpqba piso3 en piso2
         ];     
     
     % llena matrices tridimencional a crear con NaN
@@ -120,7 +136,7 @@ function test2
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap_C2_actual.mat','m_ap');
+    save('m_ap_C2b(talleres)todos.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -277,11 +293,11 @@ function atenuacion = atenua(atenuacion, tipo)
 
     switch tipo
         case {0,1,2}      % Pared de concreto gruesa
-            atenuacion = atenuacion + 9.2;
-        case 32     % Pared de concreto media
-            atenuacion = atenuacion + 5;
-        case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2.2;
+            atenuacion = atenuacion + 12.5;
+        case 32     % Pared de concreto delgada
+            atenuacion = atenuacion + 4;
+        case {46,47,48,49}     % puertas, tabiqueria
+            atenuacion = atenuacion + 2.5;
         otherwise
             fprintf('%d  ',tipo);
             

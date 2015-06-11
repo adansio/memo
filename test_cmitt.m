@@ -278,9 +278,9 @@ function atenuacion = atenua(atenuacion, tipo)
         case {0,1,2}      % Pared de concreto gruesa
             atenuacion = atenuacion + 12;
         case 32     % Pared de concreto media
-            atenuacion = atenuacion + 6;
+            atenuacion = atenuacion + 7;
         case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2.5;
+            atenuacion = atenuacion + 4;
         otherwise
             fprintf('%d  ',tipo);
             

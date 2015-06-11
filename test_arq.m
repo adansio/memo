@@ -25,7 +25,7 @@ function test_arq
     
     % Lectura de mapa imagen, paredes.- escala debe ser 1[px] -> 0.1[m]
     
-    mapa_NLOS = imread('edifd3.bmp');
+    mapa_NLOS = imread('maps/edifd3.bmp');
     dim_y=size(mapa_NLOS,1);
     dim_x=size(mapa_NLOS,2);
     
@@ -34,17 +34,19 @@ function test_arq
     mapa_LOS = llenar(mapa_LOS,dim_y , dim_x);      
     
     % Umbral de potencia de recepción
-    UPr = -70;                               
+    UPr = -80;                               
      
     % Ubicación estática de los access point
-    APs = [                          %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
-        110 470 12 1;                  % sur
-        
+    APs = [                             %   eventuales ptos con aps, y sus características x y Ptx[dBm] ch 
+        110 470 12 1;                   % sur
         293 480 12 6;                   % norte
-        
         435 350 15 11;                  % secre
-        
-        275 240 15 1                    % piso4 escala
+        275 240 15 1;                   % piso4 escala
+        155 77  11 1;                   % taller sur
+        380 77  11 1;                   % taller norte
+        %60 260  17 6;                   % comedor sur
+        %365 333 17 11;                  % comedor norte
+        %300 400 13 1;                    % piso 4
         ];     
     
     % llena matrices tridimencional a crear con NaN
@@ -269,9 +271,9 @@ function atenuacion = atenua(atenuacion, tipo)
         case {0,1,2}      % Pared de concreto gruesa
             atenuacion = atenuacion + 12;
         case 32     % Pared de concreto media
-            atenuacion = atenuacion + 6;
-        case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 3;
+            atenuacion = atenuacion + 7;
+        case {46,47,48,49}     % Pared de concreto delgada, vidrio
+            atenuacion = atenuacion + 4;
         otherwise
             fprintf('%d  ',tipo);
             

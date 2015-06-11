@@ -24,7 +24,7 @@ function test_B
             %  ch  channel
     
     % Lectura de mapa imagen, paredes.- escala debe ser 10[px] -> 1[m]
-    mapa_NLOS = imread('maps/CC_B_NIVEL_3.bmp');
+    mapa_NLOS = imread('maps/edifb3.bmp');
     
     % Mapa con aps con linea vista, y luego se llena con NaN 
     mapa_LOS = nan(size(mapa_NLOS,1), size(mapa_NLOS,2));         
@@ -38,8 +38,8 @@ function test_B
         245 85 18 1;                 
         420 85 18 1;                 
         625 85 18 1;
-        985 85 15 1;
-        855 325 15 1;
+        985 85 18 1;
+        855 325 18 1;
         ];     
     
     % llena matrices tridimencional a crear con NaN
@@ -80,7 +80,7 @@ function test_B
     %colorbar
     %hold on
     %dlmwrite('m_ap.txt',m_ap,'delimiter', '\t');
-    save('m_ap_B3.mat','m_ap');
+    save('m_ap_B3_5g.mat','m_ap');
     
     %hImg = imagesc(mapa_NLOS); 
     %set(hImg, 'AlphaData', 0.3)
@@ -156,9 +156,11 @@ end
 % avanzar a la derecha
 function [mtr, vx, rm1] = right(nlos, mtr, vx, vy, px, py, Pt, UPr)
  
+    % Friis Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+    % ITU Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	vx=vx+1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)  
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+	    Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
         if Prx > UPr
@@ -178,7 +180,7 @@ function [mtr, vy, rm2] = down(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vy=vy+1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+	    Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -198,7 +200,7 @@ function [mtr, vx, rm3] = left(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vx=vx-1;
     if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-        Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+        Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
         atenuacion = linea(nlos, px, py, vx, vy);
         Prx = Prx - atenuacion;
         if Prx > UPr 
@@ -218,7 +220,7 @@ function [mtr, vy, rm4] = up(nlos, mtr, vx, vy, px, py, Pt, UPr)
 
     vy=vy-1;
 	if vx > 0 && vx <= size(nlos,2) && vy > 0 && vy <= size(nlos,1)
-	    Prx = Pt + 20 * log10(0.099471855/(sqrt((vx-px)^2+(vy-py)^2))) - 10;
+	    Prx = Pt + 3 - (46.6 + 31*log10((sqrt(((vx-px)^2+(vy-py)^2))/10)));
 	    atenuacion = linea(nlos, px, py, vx, vy);
 	    Prx = Prx - atenuacion;
 	    if Prx > UPr 
@@ -237,11 +239,11 @@ function atenuacion = atenua(atenuacion, tipo)
 
     switch tipo
         case {0,1,2}      % Pared de concreto gruesa
-            atenuacion = atenuacion + 9;
+            atenuacion = atenuacion + 12.5;
         case 32     % Pared de concreto media
-            atenuacion = atenuacion + 4.5;
+            atenuacion = atenuacion + 7;
         case {46,47,48,49}     % Pared de concreto delgada
-            atenuacion = atenuacion + 2;
+            atenuacion = atenuacion + 4;
         otherwise
             fprintf('%d  ',tipo);
             
